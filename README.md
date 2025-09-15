@@ -1,4 +1,6 @@
-A comprehensive setup for turning a headless Raspberry Pi into a powerful SSH-accessible development environment with efficient GitHub repository management and minimal storage/memory usage.
+Raspberry Pi Headless Development Environment
+
+A comprehensive setup for turning a headless Raspberry Pi into a powerful SSH-accessible development environment with efficient GitHub repository management, programming language support, and minimal storage/memory usage.
 📋 Prerequisites
 
 Before using these scripts, you need to set up your Raspberry Pi with a headless OS:
@@ -69,6 +71,8 @@ The quick setup will:
 
     Set up helpful aliases
 
+    Install programming languages (optional)
+
 📁 Script Overview
 setup-dev-env.sh
 
@@ -86,6 +90,8 @@ Features:
 
     Project management interface
 
+    Programming language installation
+
 project-manager.sh
 
 Handles GitHub repository cloning and project organization.
@@ -99,6 +105,8 @@ Features:
     Quick navigation between projects
 
     Project archiving and restoration
+
+    Project-specific language configuration
 
 config-manager.sh
 
@@ -114,9 +122,47 @@ Features:
 
     Edit configuration files directly
 
+    Install/remove programming languages
+
 quick-setup.sh
 
 Automates the initial setup process for a new environment.
+language-manager.sh
+
+Handles programming language installation and management.
+
+Features:
+
+    Install multiple programming languages
+
+    Project-specific language configuration
+
+    Version management
+
+    Dependency installation
+
+🛠 Supported Programming Languages
+
+The environment supports installation of:
+
+    Python (pyenv, pip, pipx)
+
+    Node.js (nvm, npm, yarn)
+
+    Go (latest version)
+
+    Rust (rustup, cargo)
+
+    Java (OpenJDK)
+
+    Ruby (rbenv, gem)
+
+    PHP (with Composer)
+
+    C/C++ (build-essential, gcc, g++)
+
+    .NET (dotnet SDK)
+
 🔧 Configuration
 
 After running the quick setup, you can customize your environment:
@@ -129,6 +175,7 @@ Or use specific managers
 
 projects # Manage your projects
 config-dev # Configure environment settings
+lang-setup # Install programming languages
 ```
 📂 Directory Structure
 
@@ -138,7 +185,8 @@ The scripts create this organized structure:
 ~/development/
 ├── projects/
 │ ├── active/ # Currently working projects
-│ └── archived/ # Completed or inactive projects
+│ ├── archived/ # Completed or inactive projects
+│ └── languages/ # Project-language configuration files
 ├── temp/ # Temporary files
 ├── backups/ # Project backups
 ├── scripts/ # Your custom scripts
@@ -157,23 +205,67 @@ Choose your preferred code editor:
 🔄 Workflow Example
 
 ```bash
-1. Start a new project
+1. Install required languages
+
+lang-setup
+Choose languages needed for your projects
+2. Start a new project
 
 projects
-Choose option 6 to clone a repository
-2. Work on your project
+Choose option to clone a repository
+3. Configure project languages
 
 projects
-Choose option 8 to open a project
-3. When done, archive it
+Choose option to set up languages for specific project
+4. Work on your project
+
+projects
+Choose option to open a project
+5. When done, archive it
 
 projects
 Choose option to archive a project
 
 ```
+🌟 Language Installation Menu
+
+The language manager provides these options:
+
+```
+=== Programming Language Setup ===
+
+    Install Python environment
+
+    Install Node.js environment
+
+    Install Go language
+
+    Install Rust language
+
+    Install Java environment
+
+    Install Ruby environment
+
+    Install PHP environment
+
+    Install C/C++ tools
+
+    Install .NET SDK
+
+    Install all languages (not recommended on Pi)
+
+    Configure languages for specific project
+
+    Show installed languages
+
+    Back to main menu
+    ```
+
 💾 Storage Management
 
 For limited storage Raspberry Pi models, these strategies help:
+
+    Selective language installation: Only install languages you actually use
 
     Clone selectively: Only clone repos you're actively working on
 
@@ -182,6 +274,8 @@ For limited storage Raspberry Pi models, these strategies help:
     Clean regularly: Use the temp directory for short-term files
 
     Use .git shallow clones: ```git clone --depth 1``` for large repos
+
+    Remove unused languages: Use the language manager to clean up
 
 🔒 Security Notes
 
@@ -192,6 +286,8 @@ For limited storage Raspberry Pi models, these strategies help:
     Keep your system updated regularly
 
     Consider setting up a firewall (ufw)
+
+    Be cautious with language packages from third-party repositories
 
 🤝 Contributing
 
@@ -209,6 +305,18 @@ Common issues:
 
     Git clone fails: Check internet connection and repository URL
 
+    Language installation fails: Check available memory and storage space
+
+    Compilation errors: Some languages may need additional dependencies
+
+Memory considerations:
+
+    Raspberry Pi models with less than 2GB RAM may struggle with some language compilations
+
+    Use swap space for memory-intensive operations
+
+    Consider installing pre-compiled binaries when available
+
 Need help?
 
     Check Raspberry Pi documentation
@@ -217,5 +325,4 @@ Need help?
 
     Create a new issue with details about your problem
 
-Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments.
-
+Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
