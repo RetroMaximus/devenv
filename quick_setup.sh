@@ -10,10 +10,10 @@ NC='\033[0m' # No Color
 # Quick setup for new Raspberry Pi
 echo -e "${YELLOW}=== Quick Development Environment Setup ===${NC}"
 
-~/devenv/development/scripts/fix_line_endings.sh ~/devenv/development
+sudo ~/devenv/development/scripts/fix_line_endings.sh ~/
 
 echo -e ""
-~/devenv/development/scripts/sudofix.sh
+sudo ~/devenv/development/scripts/sudofix.sh
 
 # Update system
 echo -e "${BLUE}Updating system packages...${NC}"
@@ -21,17 +21,17 @@ echo -e "${BLUE}Updating system packages...${NC}"
 
 # Run main setup
 echo -e "${BLUE}Running main setup...${NC}"
-chmod +x ~/devenv/development/scripts/setup_dev_env.sh
-~/devenv/development/setup_dev_env.sh
+sudo chmod +x ~/devenv/development/scripts/setup_dev_env.sh
+sudo ~/devenv/development/setup_dev_env.sh
 
 # Make all scripts executable
 echo -e "${BLUE}Making scripts executable...${NC}"
-chmod +x *.sh
+sudo chmod +x *.sh
 
 # Move scripts to development directory
 echo -e "${BLUE}Organizing scripts...${NC}"
-mkdir -p ~/devenv/development/scripts
-mv *.sh ~/devenv/development/scripts/
+sudo mkdir -p ~/devenv/development/scripts
+sudo mv *.sh ~/devenv/development/scripts/
 
 # Add aliases to bashrc
 echo -e "${BLUE}Setting up aliases...${NC}"
