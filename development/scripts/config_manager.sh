@@ -16,7 +16,7 @@ load_config() {
         source "$CONFIG_FILE"
     else
         # Set default values
-        DEV_DIR="$HOME/development"
+        DEV_DIR="$HOME/devenv/development"
         EDITOR="neovim"
         GIT_USER=""
         GIT_EMAIL=""
