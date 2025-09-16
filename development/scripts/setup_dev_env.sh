@@ -224,7 +224,7 @@ configure_archive() {
             echo -e "${RED}Archive configuration not available in config-manager.sh${NC}"
         fi
     else
-        echo -e "${RED}config-manager.sh not found!${NC}"
+        echo -e "${RED}config_manager.sh not found!${NC}"
         echo -e "${YELLOW}Please make sure config-manager.sh is in the same directory.${NC}"
     fi
 }
