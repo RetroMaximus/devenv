@@ -10,8 +10,24 @@ NC='\033[0m' # No Color
 # Configuration file
 CONFIG_FILE="$HOME/.dev_env_config"
 
-# Load configuration
-source ~/.dev_env_config
+# Load or create configuration
+load_config() {
+    if [ -f "$CONFIG_FILE" ]; then
+        source "$CONFIG_FILE"
+    else
+        # Set default values
+        DEV_DIR="$HOME/development"
+        EDITOR="neovim"
+        GIT_USER=""
+        GIT_EMAIL=""
+        ARCHIVE_TYPE="none"
+        ARCHIVE_PATH=""
+        CLOUD_TYPE=""
+        
+        # Create the config file with defaults
+        save_config
+    fi
+}
 
 # Save config function
 save_config() {
@@ -22,6 +38,27 @@ save_config() {
     echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$CONFIG_FILE"
     echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$CONFIG_FILE"
     echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$CONFIG_FILE"
+}
+
+# Load configuration first
+load_config
+
+# Show current configuration
+show_config() {
+    echo -e "${YELLOW}Current Development Environment Configuration:${NC}"
+    echo "Development Directory: $DEV_DIR"
+    echo "Preferred Editor: $EDITOR"
+    echo "Git User: $GIT_USER"
+    echo "Git Email: $GIT_EMAIL"
+    echo "Archive Type: $ARCHIVE_TYPE"
+    echo "Archive Path: $ARCHIVE_PATH"
+    echo "Cloud Type: $CLOUD_TYPE"
+    echo -e "\n${YELLOW}Directory Structure:${NC}"
+    if [ -d "$DEV_DIR" ]; then
+        tree -d "$DEV_DIR" 2>/dev/null || ls -la "$DEV_DIR"
+    else
+        echo "Directory does not exist. Run 'Create directory structure' from main menu."
+    fi
 }
 
 # Change editor preference
@@ -42,7 +79,6 @@ change_editor() {
     
     save_config
     echo -e "${GREEN}Editor preference changed to $EDITOR${NC}"
-    setup_editor
 }
 
 # Change development directory
@@ -59,7 +95,6 @@ change_dev_dir() {
             mkdir -p "$new_dir"
             DEV_DIR="$new_dir"
             save_config
-            create_dev_structure
             echo -e "${GREEN}Development directory created and set to $DEV_DIR${NC}"
         fi
     fi
@@ -115,32 +150,3 @@ configure_archive() {
     save_config
     echo -e "${GREEN}Archive configuration updated!${NC}"
 }
-
-# Main menu I dont think this has to be here below this line.
-#show_menu() {
-#    while true; do
-#        echo -e "\n${YELLOW}=== Configuration Manager ===${NC}"
-#        echo -e "1. Show current configuration"
-#        echo -e "2. Change editor preference"
-#        echo -e "3. Change development directory"
-#        echo -e "4. Configure project archiving"
-#        echo -e "5. Edit configuration manually"
-#        echo -e "6. Back to main menu"
-#        echo -e "${YELLOW}==============================${NC}"
-        
-#        read -p "Choose an option (1-6): " choice
-        
-#        case $choice in
-#            1) show_config ;;
-#            2) change_editor ;;
-#            3) change_dev_dir ;;
-#            4) configure_archive ;;
-#            5) edit_config ;;
-#            6) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
-#            *) echo -e "${RED}Invalid option!${NC}" ;;
-#        esac
-#    done
-#}
-
-# Main execution
-#show_menu

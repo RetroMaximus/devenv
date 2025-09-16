@@ -47,16 +47,15 @@ process_directory() {
     if [ "$RECURSIVE" = true ]; then
         find "$dir" -type f -name "*.sh" -o -name "*.py" -o -name "*.txt" -o -name "*.conf" | while read -r file; do
             process_file "$file"
-        echo "Done."
         done
     else
         for file in "$dir"/*; do
             if [ -f "$file" ]; then
                 process_file "$file"
             fi
-        echo "Done."
         done
     fi
+    echo -e "Done"
 }
 
 for target in "$@"; do
