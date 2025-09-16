@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration file
-CONFIG_FILE="$HOME/.dev-env-config"
+CONFIG_FILE="/home/$USERNAME/.dev-env-config"
 
 # Load or create config
 load_config() {
@@ -16,7 +16,7 @@ load_config() {
         source "$CONFIG_FILE"
     else
         # Default values
-        DEV_DIR="$HOME/devenv/development"
+        DEV_DIR="/home/$USERNAME/devenv/development"
         EDITOR="neovim"
         GIT_USER=""
         GIT_EMAIL=""
@@ -214,15 +214,15 @@ open_project() {
 
 # Configure project archiving
 configure_archive() {
-    echo -e "${BLUE}Launching Configuration Manager...${NC}"
+    echo -e "${BLUE}Launching Archive Configuration...${NC}"
     
     # Check if config-manager.sh exists and has the function
     if [ -f "./config-manager.sh" ]; then
         source ./config-manager.sh
-        if type show_menu &>/dev/null; then
-            show_menu
+        if type configure_archive &>/dev/null; then
+            configure_archive
         else
-            echo -e "${RED}Configuration not available in config-manager.sh${NC}"
+            echo -e "${RED}Archive configuration not available in config-manager.sh${NC}"
         fi
     else
         echo -e "${RED}config-manager.sh not found!${NC}"
@@ -255,27 +255,31 @@ show_menu() {
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
         echo -e "4. Setup editor ($EDITOR)"
-        echo -e "5. Install programming languages"
-        echo -e "6. Clone GitHub repository"
-        echo -e "7. List projects"
-        echo -e "8. Open project"
-        echo -e "9. Configuration Manager"
-        echo -e "10. Exit"
+        echo -e "5. Change editor preference"
+        echo -e "6. Install programming languages"
+        echo -e "7. Clone GitHub repository"
+        echo -e "8. List projects"
+        echo -e "9. Open project"
+        echo -e "10. Configure project archiving"
+        echo -e "11. Show configuration"
+        echo -e "12. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
-        read -p "Choose an option (1-10): " choice
+        read -p "Choose an option (1-12): " choice
         
         case $choice in
             1) install_packages ;;
             2) setup_git ;;
             3) create_dev_structure ;;
             4) setup_editor ;;
-            5) install_languages ;;
-            6) clone_repo ;;
-            7) list_projects ;;
-            8) open_project ;;
-            9) configure_archive ;;  # This was missing
-            10) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            5) change_editor ;;
+            6) install_languages ;;
+            7) clone_repo ;;
+            8) list_projects ;;
+            9) open_project ;;
+            10) configure_archive ;;  # This was missing
+            11) show_config ;;
+            12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
