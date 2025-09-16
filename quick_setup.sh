@@ -10,10 +10,10 @@ NC='\033[0m' # No Color
 # Quick setup for new Raspberry Pi
 echo -e "${YELLOW}=== Quick Development Environment Setup ===${NC}"
 
-sudo ~/devenv/development/scripts/fix_line_endings.sh ~/
+sudo bash ~/devenv/development/scripts/fix_line_endings.sh ~/
 
 echo -e ""
-sudo ~/devenv/development/scripts/sudofix.sh
+sudo bash ~/devenv/development/scripts/sudofix.sh
 
 # Update system
 echo -e "${BLUE}Updating system packages...${NC}"
@@ -22,7 +22,7 @@ echo -e "${BLUE}Updating system packages...${NC}"
 # Run main setup
 echo -e "${BLUE}Running main setup...${NC}"
 sudo chmod +x ~/devenv/development/scripts/setup_dev_env.sh
-sudo ~/devenv/development/setup_dev_env.sh
+sudo bash ~/devenv/development/setup_dev_env.sh
 
 # Make all scripts executable
 echo -e "${BLUE}Making scripts executable...${NC}"
