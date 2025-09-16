@@ -35,7 +35,7 @@ clone_repo() {
         # Ask about language configuration
         read -p "Configure languages for this project? (y/N): " configure_lang
         if [ "$configure_lang" = "y" ] || [ "$configure_lang" = "Y" ]; then
-            ~/development/scripts/language-manager.sh
+            ./language-manager.sh
         fi
         
         cd "$target_dir" || return
@@ -228,7 +228,7 @@ restore_project() {
 
 # Configure languages for project
 configure_project_languages() {
-    ~/development/scripts/language-manager.sh
+    ./language-manager.sh
 }
 
 # Main menu

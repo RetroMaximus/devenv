@@ -10,10 +10,10 @@ NC='\033[0m' # No Color
 # Quick setup for new Raspberry Pi
 echo -e "${YELLOW}=== Quick Development Environment Setup ===${NC}"
 
-.~/development/scripts/fix_line_endings.sh ~/development
+.~/devenv/development/scripts/fix_line_endings.sh ~/development
 
 echo -e ""
-.~/development/scripts/sudofix.sh
+.~/devenv/development/scripts/sudofix.sh
 
 # Update system
 echo -e "${BLUE}Updating system packages...${NC}"
@@ -21,8 +21,8 @@ echo -e "${BLUE}Updating system packages...${NC}"
 
 # Run main setup
 echo -e "${BLUE}Running main setup...${NC}"
-chmod +x ~/development/scripts/setup_dev_env.sh
-./setup-dev-env.sh
+chmod +x ~/devenv/development/scripts/setup_dev_env.sh
+.~/devenv/development/setup_dev_env.sh
 
 # Make all scripts executable
 echo -e "${BLUE}Making scripts executable...${NC}"
@@ -30,17 +30,17 @@ chmod +x *.sh
 
 # Move scripts to development directory
 echo -e "${BLUE}Organizing scripts...${NC}"
-mkdir -p ~/development/scripts
-mv *.sh ~/development/scripts/
+mkdir -p ~/devenv/development/scripts
+mv *.sh ~/devenv/development/scripts/
 
 # Add aliases to bashrc
 echo -e "${BLUE}Setting up aliases...${NC}"
-echo "alias dev='~/development/scripts/setup-dev-env.sh'" >> ~/.bashrc
-echo "alias projects='~/development/scripts/project-manager.sh'" >> ~/.bashrc
-echo "alias config-dev='~/development/scripts/config-manager.sh'" >> ~/.bashrc
-echo "alias lang-setup='~/development/scripts/language-manager.sh'" >> ~/.bashrc
+echo "alias dev='~/devenv/development/scripts/setup-dev-env.sh'" >> ~/.bashrc
+echo "alias projects='~/devenv/development/scripts/project-manager.sh'" >> ~/.bashrc
+echo "alias config-dev='~/devenv/development/scripts/config-manager.sh'" >> ~/.bashrc
+echo "alias lang-setup='~/devenv/development/scripts/language-manager.sh'" >> ~/.bashrc
 
-echo -e "${GREEN}Setup complete! Scripts are in ~/development/scripts/${NC}"
+echo -e "${GREEN}Setup complete! Scripts are in ~/devenv/development/scripts/${NC}"
 echo -e "${YELLOW}Available commands:${NC}"
 echo -e "  dev        - Main development environment menu"
 echo -e "  projects   - Manage projects and repositories"
