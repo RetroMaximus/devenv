@@ -140,7 +140,7 @@ change_editor() {
 # Install programming languages
 install_languages() {
     echo -e "${BLUE}Launching Language Manager...${NC}"
-    ./language-manager.sh
+    sudo bash ~/devenv/development/scripts/language-manager.sh
 }
 
 # Clone GitHub repository
