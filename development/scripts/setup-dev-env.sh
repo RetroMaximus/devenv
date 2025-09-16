@@ -214,15 +214,15 @@ open_project() {
 
 # Configure project archiving
 configure_archive() {
-    echo -e "${BLUE}Launching Archive Configuration...${NC}"
+    echo -e "${BLUE}Launching Configuration Manager...${NC}"
     
     # Check if config-manager.sh exists and has the function
     if [ -f "./config-manager.sh" ]; then
         source ./config-manager.sh
-        if type configure_archive &>/dev/null; then
-            configure_archive
+        if type show_menu &>/dev/null; then
+            show_menu
         else
-            echo -e "${RED}Archive configuration not available in config-manager.sh${NC}"
+            echo -e "${RED}Configuration not available in config-manager.sh${NC}"
         fi
     else
         echo -e "${RED}config-manager.sh not found!${NC}"
@@ -260,7 +260,7 @@ show_menu() {
         echo -e "7. Clone GitHub repository"
         echo -e "8. List projects"
         echo -e "9. Open project"
-        echo -e "10. Configure project archiving"
+        echo -e "10. Configuration Manager"
         echo -e "11. Show configuration"
         echo -e "12. Exit"
         echo -e "${YELLOW}=============================================${NC}"
@@ -277,7 +277,7 @@ show_menu() {
             7) clone_repo ;;
             8) list_projects ;;
             9) open_project ;;
-            10) configure_archive ;;  # This was missing
+            10) show_config_menu ;;  # This was missing
             11) show_config ;;
             12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
