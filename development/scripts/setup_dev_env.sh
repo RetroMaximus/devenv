@@ -216,15 +216,15 @@ configure_archive() {
     echo -e "${BLUE}Launching Archive Configuration...${NC}"
     
     # Check if config-manager.sh exists and has the function
-    if [ -f "./config_manager.sh" ]; then
-        source ./config_manager.sh
+    if [ -f "./config-manager.sh" ]; then
+        source ./config-manager.sh
         if type configure_archive &>/dev/null; then
             configure_archive
         else
             echo -e "${RED}Archive configuration not available in config-manager.sh${NC}"
         fi
     else
-        echo -e "${RED}config_manager.sh not found!${NC}"
+        echo -e "${RED}config-manager.sh not found!${NC}"
         echo -e "${YELLOW}Please make sure config-manager.sh is in the same directory.${NC}"
     fi
 }
@@ -232,7 +232,7 @@ configure_archive() {
 
 # Show current configuration
 show_config() {
-    source ./config_manager.sh
+    source ./config-manager.sh
     echo -e "${YELLOW}Current Development Environment Configuration:${NC}"
     echo "Development Directory: $DEV_DIR"
     echo "Preferred Editor: $EDITOR"
