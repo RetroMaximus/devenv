@@ -31,11 +31,7 @@ process_file() {
     
     # Check if file needs conversion (contains CRLF)
     if grep -q $'\r' "$file"; then
-        echo "Converting $file..."
         sed -i 's/\r$//' "$file"
-        echo "✓ Converted $file"
-    else
-        echo "✓ $file already has UNIX line endings"
     fi
 }
 
