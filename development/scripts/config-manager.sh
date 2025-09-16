@@ -150,3 +150,32 @@ configure_archive() {
     save_config
     echo -e "${GREEN}Archive configuration updated!${NC}"
 }
+
+# Main menu
+show_menu() {
+    while true; do
+        echo -e "\n${YELLOW}=== Configuration Manager ===${NC}"
+        echo -e "1. Show current configuration"
+        echo -e "2. Change editor preference"
+        echo -e "3. Change development directory"
+        echo -e "4. Configure project archiving"
+        echo -e "5. Edit configuration manually"
+        echo -e "6. Back to main menu"
+        echo -e "${YELLOW}==============================${NC}"
+
+        read -p "Choose an option (1-6): " choice
+
+        case $choice in
+            1) show_config ;;
+            2) change_editor ;;
+            3) change_dev_dir ;;
+            4) configure_archive ;;
+            5) edit_config ;;
+            6) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            *) echo -e "${RED}Invalid option!${NC}" ;;
+        esac
+    done
+}
+
+# Main execution
+show_menu
