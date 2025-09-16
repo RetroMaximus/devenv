@@ -255,29 +255,27 @@ show_menu() {
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
         echo -e "4. Setup editor ($EDITOR)"
-        echo -e "5. Change editor preference"
-        echo -e "6. Install programming languages"
-        echo -e "7. Clone GitHub repository"
-        echo -e "8. List projects"
-        echo -e "9. Open project"
-        echo -e "10. Configuration Manager"
-        echo -e "11. Exit"
+        echo -e "5. Install programming languages"
+        echo -e "6. Clone GitHub repository"
+        echo -e "7. List projects"
+        echo -e "8. Open project"
+        echo -e "9. Configuration Manager"
+        echo -e "10. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
-        read -p "Choose an option (1-11): " choice
+        read -p "Choose an option (1-10): " choice
         
         case $choice in
             1) install_packages ;;
             2) setup_git ;;
             3) create_dev_structure ;;
             4) setup_editor ;;
-            5) change_editor ;;
-            6) install_languages ;;
-            7) clone_repo ;;
-            8) list_projects ;;
-            9) open_project ;;
-            10) configure_archive ;;  # This was missing
-            12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            5) install_languages ;;
+            6) clone_repo ;;
+            7) list_projects ;;
+            8) open_project ;;
+            9) configure_archive ;;  # This was missing
+            10) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
