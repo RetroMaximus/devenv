@@ -261,11 +261,10 @@ show_menu() {
         echo -e "8. List projects"
         echo -e "9. Open project"
         echo -e "10. Configuration Manager"
-        echo -e "11. Show configuration"
-        echo -e "12. Exit"
+        echo -e "11. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
-        read -p "Choose an option (1-12): " choice
+        read -p "Choose an option (1-11): " choice
         
         case $choice in
             1) install_packages ;;
@@ -277,8 +276,7 @@ show_menu() {
             7) clone_repo ;;
             8) list_projects ;;
             9) open_project ;;
-            10) show_config_menu ;;  # This was missing
-            11) show_config ;;
+            10) configure_archive ;;  # This was missing
             12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
