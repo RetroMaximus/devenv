@@ -217,7 +217,7 @@ configure_archive() {
     
     # Check if config-manager.sh exists and has the function
     if [ -f "./config-manager.sh" ]; then
-        source ./config-manager.sh
+        source ./config_manager.sh
         if type configure_archive &>/dev/null; then
             configure_archive
         else
@@ -232,6 +232,7 @@ configure_archive() {
 
 # Show current configuration
 show_config() {
+    source ./config_manager.sh
     echo -e "${YELLOW}Current Development Environment Configuration:${NC}"
     echo "Development Directory: $DEV_DIR"
     echo "Preferred Editor: $EDITOR"
@@ -249,7 +250,7 @@ show_config() {
 show_menu() {
     while true; do
         echo -e "\n${YELLOW}=== Raspberry Pi Development Environment ===${NC}"
-        echo -e "1. Install packages"
+        echo -e "1. Update RaspberryPi packages"
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
         echo -e "4. Setup editor ($EDITOR)"
@@ -258,12 +259,12 @@ show_menu() {
         echo -e "7. Clone GitHub repository"
         echo -e "8. List projects"
         echo -e "9. Open project"
-        echo -e "11. Configure project archiving"
-        echo -e "12. Show configuration"
-        echo -e "13. Exit"
+        echo -e "10. Configure project archiving"
+        echo -e "11. Show configuration"
+        echo -e "12. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
-        read -p "Choose an option (1-11): " choice
+        read -p "Choose an option (1-12): " choice
         
         case $choice in
             1) install_packages ;;
