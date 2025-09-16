@@ -49,7 +49,7 @@ Step 4: Boot Your Raspberry Pi
 Once you've SSH'd into your Raspberry Pi:
 
 ```bash
-Install git then Download the setup scripts
+Install Git then Download the setup scripts
 
 sudo apt-get install git
 
@@ -328,4 +328,3 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
-

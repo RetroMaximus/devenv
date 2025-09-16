@@ -3,7 +3,7 @@
 # Script to find commands that need sudo and add it where missing
 
 # Files to check
-SCRIPTS_DIR="development/scripts"
+SCRIPTS_DIR="~/development/scripts"
 FILES="$SCRIPTS_DIR/*.sh"
 
 # Commands that typically need sudo

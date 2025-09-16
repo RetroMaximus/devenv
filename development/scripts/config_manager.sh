@@ -1,17 +1,27 @@
 #!/bin/bash
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration file
+CONFIG_FILE="$HOME/.dev_env_config"
+
 # Load configuration
 source ~/.dev_env_config
 
-# Show current configuration
-show_config() {
-    echo -e "${YELLOW}Current Development Environment Configuration:${NC}"
-    echo "Development Directory: $DEV_DIR"
-    echo "Preferred Editor: $EDITOR"
-    echo "Git User: $GIT_USER"
-    echo "Git Email: $GIT_EMAIL"
-    echo -e "\n${YELLOW}Directory Structure:${NC}"
-    tree -d "$DEV_DIR" 2>/dev/null || ls -la "$DEV_DIR"
+# Save config function
+save_config() {
+    echo "DEV_DIR=\"$DEV_DIR\"" > "$CONFIG_FILE"
+    echo "EDITOR=\"$EDITOR\"" >> "$CONFIG_FILE"
+    echo "GIT_USER=\"$GIT_USER\"" >> "$CONFIG_FILE"
+    echo "GIT_EMAIL=\"$GIT_EMAIL\"" >> "$CONFIG_FILE"
+    echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$CONFIG_FILE"
+    echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$CONFIG_FILE"
+    echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$CONFIG_FILE"
 }
 
 # Change editor preference
@@ -65,3 +75,72 @@ edit_config() {
     # Reload config after editing
     source ~/.dev_env_config
 }
+
+# Add archive configuration menu option
+configure_archive() {
+    echo -e "${YELLOW}Configure Project Archiving${NC}"
+    echo "1. Git repository archiving"
+    echo "2. Cloud storage (Dropbox, Google Drive, etc.)"
+    echo "3. Local network path"
+    echo "4. Disable archiving"
+    
+    read -p "Choose archiving method (1-4): " choice
+    
+    case $choice in
+        1)
+            ARCHIVE_TYPE="git"
+            read -p "Enter Git repository URL for archives: " ARCHIVE_PATH
+            ;;
+        2)
+            ARCHIVE_TYPE="cloud"
+            echo "Cloud options: dropbox, googledrive, onedrive"
+            read -p "Enter cloud type: " CLOUD_TYPE
+            read -p "Enter cloud path (e.g., ~/Dropbox/archive): " ARCHIVE_PATH
+            ;;
+        3)
+            ARCHIVE_TYPE="local"
+            read -p "Enter network path (e.g., //192.168.1.100/archive): " ARCHIVE_PATH
+            ;;
+        4)
+            ARCHIVE_TYPE="none"
+            ARCHIVE_PATH=""
+            CLOUD_TYPE=""
+            ;;
+        *)
+            echo -e "${RED}Invalid choice!${NC}"
+            return
+            ;;
+    esac
+    
+    save_config
+    echo -e "${GREEN}Archive configuration updated!${NC}"
+}
+
+# Main menu I dont think this has to be here below this line.
+#show_menu() {
+#    while true; do
+#        echo -e "\n${YELLOW}=== Configuration Manager ===${NC}"
+#        echo -e "1. Show current configuration"
+#        echo -e "2. Change editor preference"
+#        echo -e "3. Change development directory"
+#        echo -e "4. Configure project archiving"
+#        echo -e "5. Edit configuration manually"
+#        echo -e "6. Back to main menu"
+#        echo -e "${YELLOW}==============================${NC}"
+        
+#        read -p "Choose an option (1-6): " choice
+        
+#        case $choice in
+#            1) show_config ;;
+#            2) change_editor ;;
+#            3) change_dev_dir ;;
+#            4) configure_archive ;;
+#            5) edit_config ;;
+#            6) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+#            *) echo -e "${RED}Invalid option!${NC}" ;;
+#        esac
+#    done
+#}
+
+# Main execution
+#show_menu
