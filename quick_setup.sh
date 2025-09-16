@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 # Quick setup for new Raspberry Pi
 echo -e "${YELLOW}=== Quick Development Environment Setup ===${NC}"
 
-.~/devenv/development/scripts/fix_line_endings.sh ~/development
+.~/devenv/development/scripts/fix_line_endings.sh ~/devenv/development
 
 echo -e ""
 .~/devenv/development/scripts/sudofix.sh
