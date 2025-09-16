@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,7 +22,7 @@ echo -e "${BLUE}Updating system packages...${NC}"
 # Run main setup
 echo -e "${BLUE}Running main setup...${NC}"
 sudo chmod +x ~/devenv/development/scripts/setup_dev_env.sh
-sudo bash ~/devenv/development/setup_dev_env.sh
+sudo bash ~/devenv/development/scripts/setup_dev_env.sh
 
 # Make all scripts executable
 echo -e "${BLUE}Making scripts executable...${NC}"
