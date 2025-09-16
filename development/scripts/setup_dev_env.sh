@@ -116,6 +116,26 @@ EOF
     echo -e "${GREEN}$EDITOR configuration set up!${NC}"
 }
 
+# Change editor preference
+change_editor() {
+    echo -e "${YELLOW}Select your preferred editor:${NC}"
+    echo "1. Neovim"
+    echo "2. Emacs"
+    echo "3. Nano"
+    
+    read -p "Choose (1-3): " editor_choice
+    
+    case $editor_choice in
+        1) EDITOR="neovim" ;;
+        2) EDITOR="emacs" ;;
+        3) EDITOR="nano" ;;
+        *) echo -e "${RED}Invalid choice!${NC}"; return ;;
+    esac
+    
+    save_config
+    echo -e "${GREEN}Editor preference changed to $EDITOR${NC}"
+}
+
 # Install programming languages
 install_languages() {
     echo -e "${BLUE}Launching Language Manager...${NC}"
