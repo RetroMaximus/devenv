@@ -30,7 +30,7 @@ sudo chmod +x *.sh
 # Move scripts to development directory
 echo -e "${BLUE}Organizing scripts...${NC}"
 sudo mkdir -p ~/devenv/development/scripts
-sudo mv *.sh ~/devenv/development/scripts/
+#sudo mv *.sh ~/devenv/development/scripts/
 
 # Add aliases to bashrc
 echo -e "${BLUE}Setting up aliases...${NC}"
