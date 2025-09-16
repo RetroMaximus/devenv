@@ -216,7 +216,7 @@ configure_archive() {
     echo -e "${BLUE}Launching Archive Configuration...${NC}"
     
     # Check if config-manager.sh exists and has the function
-    if [ -f "./config-manager.sh" ]; then
+    if [ -f "./config_manager.sh" ]; then
         source ./config_manager.sh
         if type configure_archive &>/dev/null; then
             configure_archive
