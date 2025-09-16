@@ -5,8 +5,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
-sed -i 's/\r$//' /devenv/quick_setup.sh
-sed -i 's/\r$//' /devenv/development/scritps/fix_line_endings.sh
+sed -i 's/\r$//' ~/devenv/quick_setup.sh
+sed -i 's/\r$//' ~/devenv/development/scritps/fix_line_endings.sh
 # Quick setup for new Raspberry Pi
 echo -e "${YELLOW}=== Quick Development Environment Setup ===${NC}"
 
