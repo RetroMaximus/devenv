@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration file
-CONFIG_FILE="$HOME/.dev_env_config"
+CONFIG_FILE="$HOME/.dev-env-config"
 
 # Load or create configuration
 load_config() {
@@ -32,12 +32,12 @@ load_config() {
 # Save config function
 save_config() {
     echo "DEV_DIR=\"$DEV_DIR\"" > "$CONFIG_FILE"
-    echo "EDITOR=\"$EDITOR\"" >> "$CONFIG_FILE"
-    echo "GIT_USER=\"$GIT_USER\"" >> "$CONFIG_FILE"
-    echo "GIT_EMAIL=\"$GIT_EMAIL\"" >> "$CONFIG_FILE"
-    echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$CONFIG_FILE"
-    echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$CONFIG_FILE"
-    echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$CONFIG_FILE"
+    echo "EDITOR=\"$EDITOR\"" > "$CONFIG_FILE"
+    echo "GIT_USER=\"$GIT_USER\"" > "$CONFIG_FILE"
+    echo "GIT_EMAIL=\"$GIT_EMAIL\"" > "$CONFIG_FILE"
+    echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" > "$CONFIG_FILE"
+    echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" > "$CONFIG_FILE"
+    echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" > "$CONFIG_FILE"
 }
 
 # Load configuration first
@@ -103,12 +103,12 @@ change_dev_dir() {
 # Edit configuration manually
 edit_config() {
     case $EDITOR in
-        "neovim") nvim ~/.dev_env_config ;;
-        "emacs") emacs ~/.dev_env_config ;;
-        "nano") nano ~/.dev_env_config ;;
+        "neovim") nvim ~/.dev-env-config ;;
+        "emacs") emacs ~/.dev-env-config ;;
+        "nano") nano ~/.dev-env-config ;;
     esac
     # Reload config after editing
-    source ~/.dev_env_config
+    source ~/.dev-env-config
 }
 
 # Add archive configuration menu option
