@@ -34,10 +34,10 @@ sudo mkdir -p ~/devenv/development/scripts
 
 # Add aliases to bashrc
 echo -e "${BLUE}Setting up aliases...${NC}"
-echo "alias dev='~/devenv/development/scripts/setup-dev-env.sh'" > ~/.bashrc
-echo "alias projects='~/devenv/development/scripts/project-manager.sh'" > ~/.bashrc
-echo "alias config-dev='~/devenv/development/scripts/config-manager.sh'" > ~/.bashrc
-echo "alias lang-setup='~/devenv/development/scripts/language-manager.sh'" > ~/.bashrc
+echo "alias dev='~/devenv/development/scripts/setup-dev-env.sh'" >> ~/.bashrc
+echo "alias projects='~/devenv/development/scripts/project-manager.sh'" >> ~/.bashrc
+echo "alias config-dev='~/devenv/development/scripts/config-manager.sh'" >> ~/.bashrc
+echo "alias lang-setup='~/devenv/development/scripts/language-manager.sh'" >> ~/.bashrc
 
 echo -e "${GREEN}Setup complete! Scripts are in ~/devenv/development/scripts/${NC}"
 echo -e "${YELLOW}Available commands:${NC}"
