@@ -7,8 +7,16 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
+
 # Configuration file
-CONFIG_FILE="/home/$USERNAME/.dev-env-config"
+CONFIG_FILE="$USER_HOME/.dev-env-config"
+
+DEV_DIR=$USER_HOME/devenv/development
 
 # Load or create config
 load_config() {
@@ -16,7 +24,7 @@ load_config() {
         source "$CONFIG_FILE"
     else
         # Default values
-        DEV_DIR="/home/$USERNAME/devenv/development"
+        DEV_DIR="$USER_HOME/devenv/development"
         EDITOR="neovim"
         GIT_USER=""
         GIT_EMAIL=""
@@ -140,7 +148,7 @@ change_editor() {
 # Install programming languages
 install_languages() {
     echo -e "${BLUE}Launching Language Manager...${NC}"
-    sudo bash ~/devenv/development/scripts/language-manager.sh
+    sudo bash $DEV_DIR/scripts/language-manager.sh
 }
 
 # Clone GitHub repository
@@ -217,8 +225,10 @@ configure_archive() {
     echo -e "${BLUE}Launching Archive Configuration...${NC}"
     
     # Check if config-manager.sh exists and has the function
-    if [ -f "./config-manager.sh" ]; then
-        source ./config-manager.sh
+    #if [ -f "./config-manager.sh" ]; then
+    #    source ./config-manager.sh
+    if [ -f "$DEV_DIR/scripts/config-manager.sh" ]; then
+        source "$DEV_DIR/scripts/config-manager.sh"
         if type configure_archive &>/dev/null; then
             configure_archive
         else
@@ -233,7 +243,7 @@ configure_archive() {
 
 # Show current configuration
 show_config() {
-    source ./config-manager.sh
+    # source ./config-manager.sh
     echo -e "${YELLOW}Current Development Environment Configuration:${NC}"
     echo "Development Directory: $DEV_DIR"
     echo "Preferred Editor: $EDITOR"

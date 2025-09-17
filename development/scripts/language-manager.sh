@@ -25,9 +25,9 @@ install_python() {
     curl https://pyenv.run | bash
     
     # Add pyenv to shell
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' > ~/.bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' > ~/.bashrc
+    echo 'eval "$(pyenv init -)"' > ~/.bashrc
     
     echo -e "${GREEN}Python environment installed!${NC}"
     echo "Run 'source ~/.bashrc' to start using pyenv"
@@ -67,9 +67,9 @@ install_go() {
     rm "go${GO_VERSION}.linux-${ARCH}.tar.gz"
     
     # Add Go to PATH
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-    echo 'export GOPATH=$HOME/go' >> ~/.bashrc
-    echo 'export PATH=$PATH:$GOPATH/bin' >> ~/.bashrc
+    echo 'export PATH=$PATH:/usr/local/go/bin' > ~/.bashrc
+    echo 'export GOPATH=$HOME/go' > ~/.bashrc
+    echo 'export PATH=$PATH:$GOPATH/bin' > ~/.bashrc
     
     echo -e "${GREEN}Go language installed!${NC}"
 }
