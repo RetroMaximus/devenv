@@ -256,6 +256,11 @@ show_config() {
     tree -d "$DEV_DIR" 2>/dev/null || ls -la "$DEV_DIR"
 }
 
+env_size() {
+echo -e ""
+echo -e "Environment"
+df -h -x tmpfs
+}
 
 # Main menu
 show_menu() {
@@ -271,8 +276,9 @@ show_menu() {
         echo -e "8. List projects"
         echo -e "9. Open project"
         echo -e "10. Configure project archiving"
-        echo -e "11. Show configuration"
-        echo -e "12. Exit"
+	echo -e "11. Show Filesystem Usage"        
+	echo -e "12. Show Configuration"
+        echo -e "13. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
         read -p "Choose an option (1-12): " choice
@@ -288,7 +294,8 @@ show_menu() {
             8) list_projects ;;
             9) open_project ;;
             10) configure_archive ;;  # This was missing
-            11) show_config ;;
+            11) env_size ;;
+	    11) show_config ;;
             12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
@@ -297,4 +304,5 @@ show_menu() {
 
 # Main execution
 load_config
+echo -e ""
 show_menu
