@@ -53,7 +53,7 @@ Install Git then Download the setup scripts
 
 sudo apt-get install git
 
-git clone https://github.com/yourusername/pi-dev-env.git
+git clone https://github.com/RetroMaximus/devenv.git
 cd pi-dev-env
 Make scripts executable
 
@@ -328,3 +328,4 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
