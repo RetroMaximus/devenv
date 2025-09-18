@@ -113,42 +113,53 @@ edit_config() {
 
 # Add archive configuration menu option
 configure_archive() {
-    echo -e "${YELLOW}Configure Project Archiving${NC}"
-    echo "1. Git repository archiving"
-    echo "2. Cloud storage (Dropbox, Google Drive, etc.)"
-    echo "3. Local network path"
-    echo "4. Disable archiving"
+    echo -e "${YELLOW}Current Archive Configuration:${NC}"
+    echo "Archive Type: $ARCHIVE_TYPE"
+    echo "Archive Path: $ARCHIVE_PATH"
+    echo ""
     
-    read -p "Choose archiving method (1-4): " choice
+    echo -e "${YELLOW}Configure Archive Settings:${NC}"
+    echo "1. Change archive type"
+    echo "2. Change archive path"
+    echo "3. Back to main menu"
     
-    case $choice in
+    read -p "Choose (1-3): " config_choice
+    
+    case $config_choice in
         1)
-            ARCHIVE_TYPE="git"
-            read -p "Enter Git repository URL for archives: " ARCHIVE_PATH
+            echo -e "${YELLOW}Select archive type:${NC}"
+            echo "1. none (remove only)"
+            echo "2. git"
+            echo "3. cloud"
+            echo "4. local"
+            read -p "Choose (1-4): " type_choice
+            
+            case $type_choice in
+                1) ARCHIVE_TYPE="none" ;;
+                2) ARCHIVE_TYPE="git" ;;
+                3) ARCHIVE_TYPE="cloud" ;;
+                4) ARCHIVE_TYPE="local" ;;
+                *) echo -e "${RED}Invalid choice!${NC}"; return ;;
+            esac
+            
+            # Save configuration using the new function
+            save_config
+            echo -e "${GREEN}Archive type updated to: $ARCHIVE_TYPE${NC}"
             ;;
         2)
-            ARCHIVE_TYPE="cloud"
-            echo "Cloud options: dropbox, googledrive, onedrive"
-            read -p "Enter cloud type: " CLOUD_TYPE
-            read -p "Enter cloud path (e.g., ~/Dropbox/archive): " ARCHIVE_PATH
+            read -p "Enter new archive path: " new_path
+            ARCHIVE_PATH="$new_path"
+            # Save configuration using the new function
+            save_config
+            echo -e "${GREEN}Archive path updated to: $ARCHIVE_PATH${NC}"
             ;;
         3)
-            ARCHIVE_TYPE="local"
-            read -p "Enter network path (e.g., //192.168.1.100/archive): " ARCHIVE_PATH
-            ;;
-        4)
-            ARCHIVE_TYPE="none"
-            ARCHIVE_PATH=""
-            CLOUD_TYPE=""
+            return
             ;;
         *)
             echo -e "${RED}Invalid choice!${NC}"
-            return
             ;;
     esac
-    
-    save_config
-    echo -e "${GREEN}Archive configuration updated!${NC}"
 }
 
 # Main menu
