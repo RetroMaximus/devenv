@@ -17,7 +17,17 @@ fi
 CONFIG_FILE="$USER_HOME/.dev-env-config"
 source ${CONFIG_FILE}
 
-DEV_DIR=$USER_HOME/devenv/development
+# Load configuration
+if [ -f ~/.dev-env-config ]; then
+    source ~/.dev-env-config
+    # Set default values if any variables are empty
+    DEV_DIR="${DEV_DIR:-$USER_HOME/devenv/development}"
+    EDITOR="${EDITOR:-neovim}"
+    ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
+#else
+#    echo -e "${RED}Configuration file not found! Please run setup-dev-env.sh first.${NC}"
+#    exit 1
+fi
 
 # Load or create config
 load_config() {
@@ -44,15 +54,55 @@ load_config() {
     fi
 }
 
-# Save config
+# Save configuration
 save_config() {
-    echo "DEV_DIR=\"$DEV_DIR\"" > "$CONFIG_FILE"
-    echo "EDITOR=\"$EDITOR\"" > "$CONFIG_FILE"
-    echo "GIT_USER=\"$GIT_USER\"" > "$CONFIG_FILE"
-    echo "GIT_EMAIL=\"$GIT_EMAIL\"" > "$CONFIG_FILE"
-    echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" > "$CONFIG_FILE"
-    echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" > "$CONFIG_FILE"
-    echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" > "$CONFIG_FILE"
+    # Create a temporary file
+    local temp_file=$(mktemp)
+    
+    # Read current config and update values
+    if [ -f ~/.dev-env-config ]; then
+        while IFS= read -r line; do
+            case $line in
+                DEV_DIR=*)
+                    echo "DEV_DIR=\"$DEV_DIR\"" >> "$temp_file"
+                    ;;
+                EDITOR=*)
+                    echo "EDITOR=\"$EDITOR\"" >> "$temp_file"
+                    ;;
+                GIT_USER=*)
+                    echo "GIT_USER=\"$GIT_USER\"" >> "$temp_file"
+                    ;;
+                GIT_EMAIL=*)
+                    echo "GIT_EMAIL=\"$GIT_EMAIL\"" >> "$temp_file"
+                    ;;
+                ARCHIVE_TYPE=*)
+                    echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$temp_file"
+                    ;;
+                ARCHIVE_PATH=*)
+                    echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$temp_file"
+                    ;;
+                CLOUD_TYPE=*)
+                    echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
+                    ;;
+                *)
+                    echo "$line" >> "$temp_file"
+                    ;;
+            esac
+        done < ~/.dev-env-config
+    else
+        # Create new config with all values
+        echo "DEV_DIR=\"$DEV_DIR\"" >> "$temp_file"
+        echo "EDITOR=\"$EDITOR\"" >> "$temp_file"
+        echo "GIT_USER=\"$GIT_USER\"" >> "$temp_file"
+        echo "GIT_EMAIL=\"$GIT_EMAIL\"" >> "$temp_file"
+        echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$temp_file"
+        echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$temp_file"
+        echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
+    fi
+    
+    # Replace the original config file
+    mv "$temp_file" ~/.dev-env-config
+    echo -e "${GREEN}Configuration saved!${NC}"
 }
 
 # Install required packages
