@@ -8,7 +8,12 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Load configuration
-source ~/.dev-env-config
+if [ -f ~/.dev-env-config ]; then
+    source ~/.dev-env-config
+else
+    echo -e "${RED}Configuration file not found! Please run setup-dev-env.sh first.${NC}"
+    exit 1
+fi
 
 # Clone GitHub repository
 clone_repo() {
@@ -95,62 +100,6 @@ open_project() {
     fi
 }
 
-# Archive project
-old_local_archive_project() {
-    list_projects
-    read -p "Enter project name to archive: " project_name
-    
-    active_dir="$DEV_DIR/projects/active/$project_name"
-    archive_dir="$DEV_DIR/projects/archived/$project_name"
-    lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
-    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
-    
-    if [ -d "$active_dir" ]; then
-        mv "$active_dir" "$archive_dir"
-        # Also archive language config if exists
-        if [ -f "$lang_file" ]; then
-            mkdir -p "$DEV_DIR/projects/languages/archived"
-            mv "$lang_file" "$lang_archive"
-        fi
-        echo -e "${GREEN}Project '$project_name' archived!${NC}"
-    else
-        echo -e "${RED}Project '$project_name' not found!${NC}"
-    fi
-}
-
-# Replace archive_project function with remote archiving
-archive_project() {
-    list_projects
-    read -p "Enter project name to archive: " project_name
-    
-    project_dir="$DEV_DIR/projects/active/$project_name"
-    
-    if [ ! -d "$project_dir" ]; then
-        echo -e "${RED}Project '$project_name' not found!${NC}"
-        return
-    fi
-
-    case $ARCHIVE_TYPE in
-        "git")
-            archive_to_git "$project_name" "$project_dir"
-            ;;
-        "cloud")
-            archive_to_cloud "$project_name" "$project_dir"
-            ;;
-        "local")
-            archive_to_local "$project_name" "$project_dir"
-            ;;
-        "none")
-            echo -e "${YELLOW}Archiving disabled. Removing project locally.${NC}"
-            rm -rf "$project_dir"
-            ;;
-    esac
-    
-    # Clean up local files
-    rm -rf "$project_dir"
-    echo -e "${GREEN}Project '$project_name' archived remotely!${NC}"
-}
-
 # Git archiving function
 archive_to_git() {
     local project_name=$1
@@ -169,6 +118,14 @@ archive_to_git() {
     # Add remote and push
     git remote add archive "$ARCHIVE_PATH" 2>/dev/null
     git push archive main --force
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Successfully archived to Git repository!${NC}"
+        return 0
+    else
+        echo -e "${RED}Failed to archive to Git repository!${NC}"
+        return 1
+    fi
 }
 
 # Cloud storage archiving
@@ -183,7 +140,16 @@ archive_to_cloud() {
     
     # Copy to cloud location
     cp "/tmp/${project_name}.tar.gz" "$ARCHIVE_PATH/"
-    rm "/tmp/${project_name}.tar.gz"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Successfully archived to cloud storage!${NC}"
+        rm "/tmp/${project_name}.tar.gz"
+        return 0
+    else
+        echo -e "${RED}Failed to archive to cloud storage!${NC}"
+        rm "/tmp/${project_name}.tar.gz"
+        return 1
+    fi
 }
 
 # Local network archiving
@@ -195,6 +161,104 @@ archive_to_local() {
     
     # Use rsync for efficient transfer
     rsync -avz "$project_dir/" "$ARCHIVE_PATH/$project_name/"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Successfully archived to network location!${NC}"
+        return 0
+    else
+        echo -e "${RED}Failed to archive to network location!${NC}"
+        return 1
+    fi
+}
+
+# Local archiving only
+archive_to_local_only() {
+    local project_name=$1
+    local project_dir=$2
+    
+    echo -e "${BLUE}Archiving locally...${NC}"
+    
+    archive_dir="$DEV_DIR/projects/archived/$project_name"
+    lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
+    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
+    
+    if [ -d "$project_dir" ]; then
+        mv "$project_dir" "$archive_dir"
+        # Also archive language config if exists
+        if [ -f "$lang_file" ]; then
+            mkdir -p "$DEV_DIR/projects/languages/archived"
+            mv "$lang_file" "$lang_archive"
+        fi
+        echo -e "${GREEN}Project '$project_name' archived locally!${NC}"
+        return 0
+    else
+        echo -e "${RED}Project '$project_name' not found!${NC}"
+        return 1
+    fi
+}
+
+# Archive project with remote options
+archive_project() {
+    list_projects
+    read -p "Enter project name to archive: " project_name
+    
+    project_dir="$DEV_DIR/projects/active/$project_name"
+    
+    if [ ! -d "$project_dir" ]; then
+        echo -e "${RED}Project '$project_name' not found!${NC}"
+        return
+    fi
+
+    # Show archiving options
+    echo -e "${YELLOW}Select archiving method:${NC}"
+    echo "1. Local only (move to archived folder)"
+    echo "2. Git repository"
+    echo "3. Cloud storage"
+    echo "4. Network location"
+    echo "5. Cancel"
+    
+    read -p "Choose (1-5): " archive_choice
+    
+    case $archive_choice in
+        1)
+            archive_to_local_only "$project_name" "$project_dir"
+            ;;
+        2)
+            if [ -z "$ARCHIVE_PATH" ]; then
+                echo -e "${RED}Git archive path not configured!${NC}"
+                return
+            fi
+            archive_to_git "$project_name" "$project_dir"
+            ;;
+        3)
+            if [ -z "$ARCHIVE_PATH" ]; then
+                echo -e "${RED}Cloud archive path not configured!${NC}"
+                return
+            fi
+            archive_to_cloud "$project_name" "$project_dir"
+            ;;
+        4)
+            if [ -z "$ARCHIVE_PATH" ]; then
+                echo -e "${RED}Network archive path not configured!${NC}"
+                return
+            fi
+            archive_to_local "$project_name" "$project_dir"
+            ;;
+        5)
+            echo -e "${YELLOW}Archive cancelled.${NC}"
+            return
+            ;;
+        *)
+            echo -e "${RED}Invalid choice!${NC}"
+            return
+            ;;
+    esac
+    
+    # Only remove local files if archiving was successful
+    if [ $? -eq 0 ] && [ $archive_choice -ne 1 ]; then
+        rm -rf "$project_dir"
+        echo -e "${GREEN}Project '$project_name' archived remotely!${NC}"
+    fi
 }
 
 # Restore project
@@ -228,7 +292,64 @@ restore_project() {
 
 # Configure languages for project
 configure_project_languages() {
-    ./language-manager.sh
+    if [ -f "./language-manager.sh" ]; then
+        ./language-manager.sh
+    elif [ -f "$DEV_DIR/scripts/language-manager.sh" ]; then
+        bash "$DEV_DIR/scripts/language-manager.sh"
+    else
+        echo -e "${RED}Language manager script not found!${NC}"
+    fi
+}
+
+# Configure archive settings
+configure_archive_settings() {
+    echo -e "${YELLOW}Current Archive Configuration:${NC}"
+    echo "Archive Type: $ARCHIVE_TYPE"
+    echo "Archive Path: $ARCHIVE_PATH"
+    echo ""
+    
+    echo -e "${YELLOW}Configure Archive Settings:${NC}"
+    echo "1. Change archive type"
+    echo "2. Change archive path"
+    echo "3. Back to main menu"
+    
+    read -p "Choose (1-3): " config_choice
+    
+    case $config_choice in
+        1)
+            echo -e "${YELLOW}Select archive type:${NC}"
+            echo "1. none (remove only)"
+            echo "2. git"
+            echo "3. cloud"
+            echo "4. local"
+            read -p "Choose (1-4): " type_choice
+            
+            case $type_choice in
+                1) ARCHIVE_TYPE="none" ;;
+                2) ARCHIVE_TYPE="git" ;;
+                3) ARCHIVE_TYPE="cloud" ;;
+                4) ARCHIVE_TYPE="local" ;;
+                *) echo -e "${RED}Invalid choice!${NC}"; return ;;
+            esac
+            
+            # Update config file
+            sed -i "s/ARCHIVE_TYPE=.*/ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"/" ~/.dev-env-config
+            echo -e "${GREEN}Archive type updated to: $ARCHIVE_TYPE${NC}"
+            ;;
+        2)
+            read -p "Enter new archive path: " new_path
+            ARCHIVE_PATH="$new_path"
+            # Update config file
+            sed -i "s/ARCHIVE_PATH=.*/ARCHIVE_PATH=\"$ARCHIVE_PATH\"/" ~/.dev-env-config
+            echo -e "${GREEN}Archive path updated to: $ARCHIVE_PATH${NC}"
+            ;;
+        3)
+            return
+            ;;
+        *)
+            echo -e "${RED}Invalid choice!${NC}"
+            ;;
+    esac
 }
 
 # Main menu
@@ -241,10 +362,11 @@ show_menu() {
         echo -e "4. Archive project"
         echo -e "5. Restore project"
         echo -e "6. Configure project languages"
-        echo -e "7. Back to main menu"
+        echo -e "7. Configure archive settings"
+        echo -e "8. Back to main menu"
         echo -e "${YELLOW}=======================${NC}"
         
-        read -p "Choose an option (1-7): " choice
+        read -p "Choose an option (1-8): " choice
         
         case $choice in
             1) clone_repo ;;
@@ -253,7 +375,8 @@ show_menu() {
             4) archive_project ;;
             5) restore_project ;;
             6) configure_project_languages ;;
-            7) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            7) configure_archive_settings ;;
+            8) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
