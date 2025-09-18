@@ -18,14 +18,14 @@ sudo bash ~/devenv/development/scripts/sudofix.sh
 #echo -e "${BLUE}Updating system packages...${NC}"
 #sudo apt update && sudo apt upgrade -y
 
-# Run main setup
-echo -e "${BLUE}Running main setup...${NC}"
-sudo chmod +x ~/devenv/development/scripts/setup-dev-env.sh
-sudo bash ~/devenv/development/scripts/setup-dev-env.sh
-
 # Make all scripts executable
 echo -e "${BLUE}Making scripts executable...${NC}"
 sudo chmod +x *.sh
+sudo chmod +x ~/devenv/development/scripts/*.sh
+
+# Run main setup
+echo -e "${BLUE}Running main setup...${NC}"
+sudo bash ~/devenv/development/scripts/setup-dev-env.sh
 
 # Move scripts to development directory
 echo -e "${BLUE}Organizing scripts...${NC}"
