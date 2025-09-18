@@ -101,7 +101,7 @@ save_config() {
     fi
     
     # Replace the original config file
-    mv "$temp_file" ~/.dev-env-config
+    sudo mv "$temp_file" ~/.dev-env-config
     echo -e "${GREEN}Configuration saved!${NC}"
 }
 
@@ -126,18 +126,18 @@ setup_git() {
         echo "GIT_EMAIL=\"$GIT_EMAIL\"" >> "$CONFIG_FILE"
     fi
     
-    git config --global user.name "$GIT_USER"
-    git config --global user.email "$GIT_EMAIL"
-    git config --global core.editor "$EDITOR"
-    git config --global pull.rebase false
+    sudo git config --global user.name "$GIT_USER"
+    sudo git config --global user.email "$GIT_EMAIL"
+    sudo git config --global core.editor "$EDITOR"
+    sudo git config --global pull.rebase false
     echo -e "${GREEN}Git configuration set up!${NC}"
 }
 
 # Create development directory structure
 create_dev_structure() {
     echo -e "${BLUE}Creating development directory structure...${NC}"
-    mkdir -p "$DEV_DIR"/{projects,temp,backups,scripts,configs}
-    mkdir -p "$DEV_DIR/projects"/{active,archived,languages}
+    sudo mkdir -p "$DEV_DIR"/{projects,temp,backups,scripts,configs}
+    sudo mkdir -p "$DEV_DIR/projects"/{active,archived,languages}
     echo -e "${GREEN}Directory structure created in $DEV_DIR${NC}"
 }
 
@@ -148,8 +148,8 @@ setup_editor() {
     case $EDITOR in
         "neovim")
             # Create basic neovim config
-            mkdir -p ~/.config/nvim
-            cat > ~/.config/nvim/init.vim << EOF
+            sudo mkdir -p ~/.config/nvim
+            sudo cat > ~/.config/nvim/init.vim << EOF
 set number
 set relativenumber
 set tabstop=4
@@ -219,7 +219,7 @@ clone_repo() {
     fi
     
     echo -e "${BLUE}Cloning repository to $target_dir...${NC}"
-    git clone "$repo_url" "$target_dir"
+    sudo git clone "$repo_url" "$target_dir"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Repository cloned successfully!${NC}"
@@ -357,6 +357,8 @@ show_menu() {
         esac    
     done
 }
+
+
 # Main execution
 load_config
 echo -e ""
