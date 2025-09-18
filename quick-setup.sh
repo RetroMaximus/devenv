@@ -32,18 +32,33 @@ echo -e "${BLUE}Organizing scripts...${NC}"
 sudo mkdir -p ~/devenv/development/scripts
 #sudo mv *.sh ~/devenv/development/scripts/
 
-# Add aliases to bashrc
+# Add aliases to bashrc only if they don't exist
 echo -e "${BLUE}Setting up aliases...${NC}"
-echo "alias dev='~/devenv/development/scripts/setup-dev-env.sh'" >> ~/.bashrc
-echo "alias projects='~/devenv/development/scripts/project-manager.sh'" >> ~/.bashrc
-echo "alias config-dev='~/devenv/development/scripts/config-manager.sh'" >> ~/.bashrc
-echo "alias lang-setup='~/devenv/development/scripts/language-manager.sh'" >> ~/.bashrc
+
+# Function to add alias if it doesn't exist
+add_alias_if_not_exists() {
+    local alias_name=$1
+    local alias_command=$2
+    local alias_desc=$3
+    
+    if ! grep -q "alias $alias_name=" ~/.bashrc; then
+        echo "alias $alias_name='$alias_command'" >> ~/.bashrc
+        echo -e "${GREEN}$alias_name${NC} - $alias_desc"
+    else
+        echo -e "${GREEN}$alias_name${NC} - $alias_desc"
+    fi
+}
 
 echo -e "${GREEN}Setup complete! Scripts are in ~/devenv/development/scripts/${NC}"
+
+# Add the aliases
 echo -e "${YELLOW}Available commands:${NC}"
-echo -e "  dev        - Main development environment menu"
-echo -e "  projects   - Manage projects and repositories"
-echo -e "  config-dev - Configure environment settings"
-echo -e "  lang-setup - Install and manage programming languages"
+
+add_alias_if_not_exists "dev" "Main development environment menu" "~/devenv/development/scripts/setup-dev-env.sh"
+add_alias_if_not_exists "projects" "Manage projects and repositories" "~/devenv/development/scripts/project-manager.sh"
+add_alias_if_not_exists "config-dev" "Configure environment settings" "~/devenv/development/scripts/config-manager.sh"
+add_alias_if_not_exists "lang-setup" "Install and manage programming languages" "~/devenv/development/scripts/language-manager.sh"
+
+source ~/.bashrc
+
 echo -e ""
-echo -e "${YELLOW}Run 'source ~/.bashrc' to apply aliases, or restart your shell.${NC}"
