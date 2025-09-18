@@ -7,8 +7,14 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
 # Configuration file
-CONFIG_FILE="$HOME/.dev-env-config"
+
+CONFIG_FILE="~/.dev-env-config"
 
 # Load or create configuration
 load_config() {
@@ -16,7 +22,7 @@ load_config() {
         source "$CONFIG_FILE"
     else
         # Set default values
-        DEV_DIR="$HOME/devenv/development"
+        DEV_DIR="$USER_HOME/devenv/development"
         EDITOR="neovim"
         GIT_USER=""
         GIT_EMAIL=""
