@@ -32,7 +32,7 @@ clone_repo() {
     fi
     
     echo -e "${BLUE}Cloning repository to $target_dir...${NC}"
-    git clone "$repo_url" "$target_dir"
+    sudo git clone "$repo_url" "$target_dir"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Repository cloned successfully!${NC}"
@@ -110,14 +110,14 @@ archive_to_git() {
     # Initialize git if not already
     cd "$project_dir" || return
     if [ ! -d ".git" ]; then
-        git init
-        git add .
-        git commit -m "Initial archive of $project_name"
+        sudo git init
+        sudo git add .
+        sudo git commit -m "Initial archive of $project_name"
     fi
     
     # Add remote and push
-    git remote add archive "$ARCHIVE_PATH" 2>/dev/null
-    git push archive main --force
+    sudo git remote add archive "$ARCHIVE_PATH" 2>/dev/null
+    sudo git push archive main --force
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Successfully archived to Git repository!${NC}"
@@ -136,18 +136,18 @@ archive_to_cloud() {
     echo -e "${BLUE}Archiving to cloud storage...${NC}"
     
     # Create compressed archive
-    tar -czf "/tmp/${project_name}.tar.gz" -C "$project_dir" .
+    sudo tar -czf "/tmp/${project_name}.tar.gz" -C "$project_dir" .
     
     # Copy to cloud location
-    cp "/tmp/${project_name}.tar.gz" "$ARCHIVE_PATH/"
+    sudo cp "/tmp/${project_name}.tar.gz" "$ARCHIVE_PATH/"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Successfully archived to cloud storage!${NC}"
-        rm "/tmp/${project_name}.tar.gz"
+        sudo rm "/tmp/${project_name}.tar.gz"
         return 0
     else
         echo -e "${RED}Failed to archive to cloud storage!${NC}"
-        rm "/tmp/${project_name}.tar.gz"
+        sudo rm "/tmp/${project_name}.tar.gz"
         return 1
     fi
 }
@@ -160,7 +160,7 @@ archive_to_local() {
     echo -e "${BLUE}Archiving to network location...${NC}"
     
     # Use rsync for efficient transfer
-    rsync -avz "$project_dir/" "$ARCHIVE_PATH/$project_name/"
+    sudo rsync -avz "$project_dir/" "$ARCHIVE_PATH/$project_name/"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Successfully archived to network location!${NC}"
@@ -183,11 +183,11 @@ archive_to_local_only() {
     lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
     
     if [ -d "$project_dir" ]; then
-        mv "$project_dir" "$archive_dir"
+        sudo mv "$project_dir" "$archive_dir"
         # Also archive language config if exists
         if [ -f "$lang_file" ]; then
-            mkdir -p "$DEV_DIR/projects/languages/archived"
-            mv "$lang_file" "$lang_archive"
+            sudo mkdir -p "$DEV_DIR/projects/languages/archived"
+            sudo mv "$lang_file" "$lang_archive"
         fi
         echo -e "${GREEN}Project '$project_name' archived locally!${NC}"
         return 0
@@ -256,7 +256,7 @@ archive_project() {
     
     # Only remove local files if archiving was successful
     if [ $? -eq 0 ] && [ $archive_choice -ne 1 ]; then
-        rm -rf "$project_dir"
+        sudo rm -rf "$project_dir"
         echo -e "${GREEN}Project '$project_name' archived remotely!${NC}"
     fi
 }
@@ -282,7 +282,7 @@ restore_project() {
         mv "$archive_dir" "$active_dir"
         # Also restore language config if exists
         if [ -f "$lang_archive" ]; then
-            mv "$lang_archive" "$lang_file"
+            sudo mv "$lang_archive" "$lang_file"
         fi
         echo -e "${GREEN}Project '$project_name' restored!${NC}"
     else
@@ -363,7 +363,7 @@ create_new_project() {
     fi
     
     echo -e "${BLUE}Creating new project: $project_name...${NC}"
-    mkdir -p "$target_dir"
+    sudo mkdir -p "$target_dir"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Project created successfully!${NC}"
@@ -372,14 +372,14 @@ create_new_project() {
         read -p "Initialize Git repository? (y/N): " init_git
         if [ "$init_git" = "y" ] || [ "$init_git" = "Y" ]; then
             cd "$target_dir" || return
-            git init
+            sudo git init
             echo -e "${GREEN}Git repository initialized!${NC}"
             
             # Ask about adding remote
             read -p "Add remote GitHub repository? (y/N): " add_remote
             if [ "$add_remote" = "y" ] || [ "$add_remote" = "Y" ]; then
                 read -p "Enter GitHub repository URL: " repo_url
-                git remote add origin "$repo_url"
+                sudo git remote add origin "$repo_url"
                 echo -e "${GREEN}Remote repository added!${NC}"
             fi
         fi
@@ -440,7 +440,7 @@ delete_project() {
                         # Remove cloud archive
                         cloud_file="$ARCHIVE_PATH/${project_name}.tar.gz"
                         if [ -f "$cloud_file" ]; then
-                            rm -f "$cloud_file"
+                            sudo rm -f "$cloud_file"
                             echo -e "${GREEN}Removed cloud archive.${NC}"
                         fi
                         ;;
@@ -448,7 +448,7 @@ delete_project() {
                         # Remove network archive
                         network_dir="$ARCHIVE_PATH/$project_name"
                         if [ -d "$network_dir" ]; then
-                            rm -rf "$network_dir"
+                            sudo rm -rf "$network_dir"
                             echo -e "${GREEN}Removed network archive.${NC}"
                         fi
                         ;;
@@ -456,11 +456,11 @@ delete_project() {
             fi
             
             # Delete local archive
-            rm -rf "$archive_dir"
+            sudo rm -rf "$archive_dir"
             
             # Delete language config if exists
             if [ -f "$lang_archive" ]; then
-                rm -f "$lang_archive"
+                sudo rm -f "$lang_archive"
             fi
             
             echo -e "${GREEN}Project '$project_name' deleted successfully!${NC}"
