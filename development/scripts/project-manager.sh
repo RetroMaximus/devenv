@@ -351,36 +351,158 @@ configure_archive_settings() {
             ;;
     esac
 }
+# Create new project
+create_new_project() {
+    read -p "Enter project name: " project_name
+    
+    target_dir="$DEV_DIR/projects/active/$project_name"
+    
+    if [ -d "$target_dir" ]; then
+        echo -e "${RED}Project '$project_name' already exists!${NC}"
+        return 1
+    fi
+    
+    echo -e "${BLUE}Creating new project: $project_name...${NC}"
+    mkdir -p "$target_dir"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Project created successfully!${NC}"
+        
+        # Ask about Git initialization
+        read -p "Initialize Git repository? (y/N): " init_git
+        if [ "$init_git" = "y" ] || [ "$init_git" = "Y" ]; then
+            cd "$target_dir" || return
+            git init
+            echo -e "${GREEN}Git repository initialized!${NC}"
+            
+            # Ask about adding remote
+            read -p "Add remote GitHub repository? (y/N): " add_remote
+            if [ "$add_remote" = "y" ] || [ "$add_remote" = "Y" ]; then
+                read -p "Enter GitHub repository URL: " repo_url
+                git remote add origin "$repo_url"
+                echo -e "${GREEN}Remote repository added!${NC}"
+            fi
+        fi
+        
+        # Ask about language configuration
+        read -p "Configure languages for this project? (y/N): " configure_lang
+        if [ "$configure_lang" = "y" ] || [ "$configure_lang" = "Y" ]; then
+            configure_project_languages
+        fi
+        
+        cd "$target_dir" || return
+    else
+        echo -e "${RED}Failed to create project!${NC}"
+    fi
+}
 
+# Delete project from archives
+delete_project() {
+    echo -e "${YELLOW}Archived Projects:${NC}"
+    if [ -d "$DEV_DIR/projects/archived" ]; then
+        archived_projects=$(ls "$DEV_DIR/projects/archived")
+        if [ -z "$archived_projects" ]; then
+            echo "No archived projects found."
+            return
+        fi
+        ls -la "$DEV_DIR/projects/archived"
+    else
+        echo "No archived projects found."
+        return
+    fi
+    
+    read -p "Enter project name to delete: " project_name
+    
+    # Check if project is active (should not delete active projects)
+    if [ -d "$DEV_DIR/projects/active/$project_name" ]; then
+        echo -e "${RED}Cannot delete active project! Please archive it first.${NC}"
+        return 1
+    fi
+    
+    archive_dir="$DEV_DIR/projects/archived/$project_name"
+    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
+    
+    if [ -d "$archive_dir" ]; then
+        # Confirm deletion
+        echo -e "${RED}WARNING: This will permanently delete project '$project_name'${NC}"
+        read -p "Are you sure you want to delete? (y/N): " confirm_delete
+        
+        if [ "$confirm_delete" = "y" ] || [ "$confirm_delete" = "Y" ]; then
+            # Delete from remote archive if configured
+            if [ "$ARCHIVE_TYPE" != "none" ] && [ -n "$ARCHIVE_PATH" ]; then
+                echo -e "${BLUE}Removing from remote archive...${NC}"
+                case $ARCHIVE_TYPE in
+                    "git")
+                        # For git, we'd need to remove the remote branch/repo
+                        echo -e "${YELLOW}Note: Git repository must be manually deleted from $ARCHIVE_PATH${NC}"
+                        ;;
+                    "cloud")
+                        # Remove cloud archive
+                        cloud_file="$ARCHIVE_PATH/${project_name}.tar.gz"
+                        if [ -f "$cloud_file" ]; then
+                            rm -f "$cloud_file"
+                            echo -e "${GREEN}Removed cloud archive.${NC}"
+                        fi
+                        ;;
+                    "local")
+                        # Remove network archive
+                        network_dir="$ARCHIVE_PATH/$project_name"
+                        if [ -d "$network_dir" ]; then
+                            rm -rf "$network_dir"
+                            echo -e "${GREEN}Removed network archive.${NC}"
+                        fi
+                        ;;
+                esac
+            fi
+            
+            # Delete local archive
+            rm -rf "$archive_dir"
+            
+            # Delete language config if exists
+            if [ -f "$lang_archive" ]; then
+                rm -f "$lang_archive"
+            fi
+            
+            echo -e "${GREEN}Project '$project_name' deleted successfully!${NC}"
+        else
+            echo -e "${YELLOW}Deletion cancelled.${NC}"
+        fi
+    else
+        echo -e "${RED}Project '$project_name' not found in archives!${NC}"
+    fi
+}
 # Main menu
 show_menu() {
     while true; do
         echo -e "\n${YELLOW}=== Project Manager ===${NC}"
-        echo -e "1. Clone GitHub repository"
-        echo -e "2. List all projects"
-        echo -e "3. Open project"
-        echo -e "4. Archive project"
-        echo -e "5. Restore project"
-        echo -e "6. Configure project languages"
-        echo -e "7. Configure archive settings"
-        echo -e "8. Back to main menu"
+        echo -e "1. Create new project"
+        echo -e "2. Clone GitHub repository"
+        echo -e "3. List all projects"
+        echo -e "4. Open project"
+        echo -e "5. Archive project"
+        echo -e "6. Restore project"
+        echo -e "7. Delete project from archives"
+        echo -e "8. Configure project languages"
+        echo -e "9. Configure archive settings"
+        echo -e "10. Back to main menu"
         echo -e "${YELLOW}=======================${NC}"
         
-        read -p "Choose an option (1-8): " choice
+        read -p "Choose an option (1-10): " choice
         
         case $choice in
-            1) clone_repo ;;
-            2) list_projects ;;
-            3) open_project ;;
-            4) archive_project ;;
-            5) restore_project ;;
-            6) configure_project_languages ;;
-            7) configure_archive_settings ;;
-            8) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            1) create_new_project ;;
+            2) clone_repo ;;
+            3) list_projects ;;
+            4) open_project ;;
+            5) archive_project ;;
+            6) restore_project ;;
+            7) delete_project ;;
+            8) configure_project_languages ;;
+            9) configure_archive_settings ;;
+            10) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
 }
-
 # Main execution
 show_menu
