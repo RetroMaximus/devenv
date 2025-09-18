@@ -15,6 +15,7 @@ fi
 
 # Configuration file
 CONFIG_FILE="$USER_HOME/.dev-env-config"
+source ${CONFIG_FILE}
 
 DEV_DIR=$USER_HOME/devenv/development
 
@@ -272,16 +273,14 @@ show_menu() {
         echo -e "4. Setup editor ($EDITOR)"
         echo -e "5. Change editor preference"
         echo -e "6. Install programming languages"
-        echo -e "7. Clone GitHub repository"
-        echo -e "8. List projects"
-        echo -e "9. Open project"
-        echo -e "10. Configure project archiving"
-	echo -e "11. Show Filesystem Usage"        
-	echo -e "12. Show Configuration"
-        echo -e "13. Exit"
+        echo -e "7. Projects Manager"
+        echo -e "8. Configure project archiving"
+        echo -e "9. Show Filesystem Usage"        
+        echo -e "10. Show Configuration"
+        echo -e "11. Exit"
         echo -e "${YELLOW}=============================================${NC}"
         
-        read -p "Choose an option (1-12): " choice
+        read -p "Choose an option (1-11): " choice
         
         case $choice in
             1) install_packages ;;
@@ -290,18 +289,24 @@ show_menu() {
             4) setup_editor ;;
             5) change_editor ;;
             6) install_languages ;;
-            7) clone_repo ;;
-            8) list_projects ;;
-            9) open_project ;;
-            10) configure_archive ;;  # This was missing
-            11) env_size ;;
-	    11) show_config ;;
-            12) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            7) 
+                # Launch the project manager script
+                if [ -f "./project-manager.sh" ]; then
+                    bash ./project-manager.sh
+                elif [ -f "$DEV_DIR/scripts/project-manager.sh" ]; then
+                    bash "$DEV_DIR/scripts/project-manager.sh"
+                else
+                    echo -e "${RED}Project manager script not found!${NC}"
+                fi
+                ;;
+            8) configure_archive ;;
+            9) env_size ;;
+            10) show_config ;;
+            11) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
 }
-
 # Main execution
 load_config
 echo -e ""
