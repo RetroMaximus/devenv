@@ -54,10 +54,10 @@ echo -e "${GREEN}Setup complete! Scripts are in ~/devenv/development/scripts/${N
 # Add the aliases
 echo -e "${YELLOW}Available commands:${NC}"
 
-add_alias_if_not_exists "dev" "Main development environment menu" "~/devenv/development/scripts/setup-dev-env.sh"
-add_alias_if_not_exists "projects" "Manage projects and repositories" "~/devenv/development/scripts/project-manager.sh"
-add_alias_if_not_exists "config-dev" "Configure environment settings" "~/devenv/development/scripts/config-manager.sh"
-add_alias_if_not_exists "lang-setup" "Install and manage programming languages" "~/devenv/development/scripts/language-manager.sh"
+add_alias_if_not_exists "dev" "~/devenv/development/scripts/setup-dev-env.sh" "Main development environment menu"
+add_alias_if_not_exists "projects" "~/devenv/development/scripts/project-manager.sh" "Manage projects and repositories"
+add_alias_if_not_exists "config-dev" "~/devenv/development/scripts/config-manager.sh" "Configure environment settings"
+add_alias_if_not_exists "lang-setup" "~/devenv/development/scripts/language-manager.sh" "Install and manage programming languages"
 
 source ~/.bashrc
 
