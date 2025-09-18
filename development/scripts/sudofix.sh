@@ -23,6 +23,7 @@ SUDO_COMMANDS=(
     "mv.*/etc/"
     "cp.*/var/"
     "cp.*/etc/"
+    "mkdir"
     "mkdir.*/var/"
     "mkdir.*/etc/"
     "rm.*/var/"
