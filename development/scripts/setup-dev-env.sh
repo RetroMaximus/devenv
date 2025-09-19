@@ -145,16 +145,24 @@ create_dev_structure() {
     sudo mkdir -p "$DEV_DIR"/{temp,backups,scripts,configs}
     
     # Projects and languages in separate, safer locations
-    # Only create if they don't exist to avoid overwriting
     if [ ! -d "$USER_HOME/projects" ]; then
         sudo mkdir -p "$USER_HOME/projects"/{active,imported,archived}
         echo -e "${GREEN}Created projects directory structure${NC}"
     else
         echo -e "${YELLOW}Projects directory already exists, preserving contents${NC}"
-        # Ensure subdirectories exist
-        sudo mkdir -p "$USER_HOME/projects/active"
-        sudo mkdir -p "$USER_HOME/projects/imported"
-        sudo mkdir -p "$USER_HOME/projects/archived"
+        # Check and create each subdirectory only if it doesn't exist
+        if [ ! -d "$USER_HOME/projects/active" ]; then
+            sudo mkdir -p "$USER_HOME/projects/active"
+            echo -e "${GREEN}Created projects/active directory${NC}"
+        fi
+        if [ ! -d "$USER_HOME/projects/imported" ]; then
+            sudo mkdir -p "$USER_HOME/projects/imported"
+            echo -e "${GREEN}Created projects/imported directory${NC}"
+        fi
+        if [ ! -d "$USER_HOME/projects/archived" ]; then
+            sudo mkdir -p "$USER_HOME/projects/archived"
+            echo -e "${GREEN}Created projects/archived directory${NC}"
+        fi
     fi
     
     if [ ! -d "$USER_HOME/projects/languages" ]; then
@@ -162,14 +170,20 @@ create_dev_structure() {
         echo -e "${GREEN}Created languages directory structure${NC}"
     else
         echo -e "${YELLOW}Languages directory already exists, preserving contents${NC}"
-        # Ensure subdirectories exist
-        sudo mkdir -p "$USER_HOME/projects/languages/active"
-        sudo mkdir -p "$USER_HOME/projects/languages/archived"
+        # Check and create each subdirectory only if it doesn't exist
+        if [ ! -d "$USER_HOME/projects/languages/active" ]; then
+            sudo mkdir -p "$USER_HOME/projects/languages/active"
+            echo -e "${GREEN}Created languages/active directory${NC}"
+        fi
+        if [ ! -d "$USER_HOME/projects/languages/archived" ]; then
+            sudo mkdir -p "$USER_HOME/projects/languages/archived"
+            echo -e "${GREEN}Created languages/archived directory${NC}"
+        fi
     fi
     
     echo -e "${GREEN}Directory structure verified!${NC}"
-    echo -e "${BLUE}Projects stored in: $USER_HOME/projects${NC}"
-
+    
+ 
 }
 
 # Setup editor configuration
