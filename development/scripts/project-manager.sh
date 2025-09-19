@@ -10,10 +10,15 @@ NC='\033[0m' # No Color
 # Load configuration
 if [ -f ~/.dev-env-config ]; then
     source ~/.dev-env-config
-else
-    echo -e "${RED}Configuration file not found! Please run setup-dev-env.sh first.${NC}"
-    exit 1
-fi
+    # Set default values if any variables are empty
+    DEV_DIR="${DEV_DIR:-$USER_HOME/devenv/development}"
+    EDITOR="${EDITOR:-neovim}"
+    GIT_USER="${GIT_USER:-none}"
+    GIT_PATH="${GIT_PATH:-none}"
+    ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
+    ARCHIVE_PATH="${ARCHIVE_PATH:-none}"
+    OPEN_PROJECT="${OPEN_PROJECT:-none}"
+
 
 # Clone GitHub repository
 clone_repo() {
