@@ -36,13 +36,6 @@ clone_repo() {
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Repository cloned successfully!${NC}"
-        
-        # Ask about language configuration
-        read -p "Configure languages for this project? (y/N): " configure_lang
-        if [ "$configure_lang" = "y" ] || [ "$configure_lang" = "Y" ]; then
-            ./language-manager.sh
-        fi
-        
         cd "$target_dir" || return
     else
         echo -e "${RED}Failed to clone repository!${NC}"
@@ -64,12 +57,6 @@ list_projects() {
     else
         echo "No archived projects found."
     fi
-    
-    # Show language configurations if any
-    if [ -d "$DEV_DIR/projects/languages" ] && [ -n "$(ls -A "$DEV_DIR/projects/languages")" ]; then
-        echo -e "\n${YELLOW}Project Language Configurations:${NC}"
-        ls -la "$DEV_DIR/projects/languages"
-    fi
 }
 
 # Open project
@@ -81,7 +68,10 @@ open_project() {
     
     if [ -d "$project_dir" ]; then
         cd "$project_dir" || return
+        OPEN_PROJECT="$project_name"
+        save_config
         echo -e "${GREEN}Changed to project directory: $project_dir${NC}"
+        echo -e "${GREEN}Current project: $OPEN_PROJECT${NC}"
         
         # Check if language config exists and show info
         lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
@@ -99,6 +89,7 @@ open_project() {
         echo -e "${RED}Project '$project_name' not found!${NC}"
     fi
 }
+
 
 # Git archiving function
 archive_to_git() {
