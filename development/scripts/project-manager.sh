@@ -533,6 +533,94 @@ delete_project() {
         echo -e "${RED}Project '$project_name' not found in archives!${NC}"
     fi
 }
+
+# List imported projects
+list_imported_projects() {
+    echo -e "${YELLOW}Imported Projects:${NC}"
+    if [ -d "$DEV_DIR/projects/imported" ]; then
+        ls -la "$DEV_DIR/projects/imported"
+    else
+        echo "No imported projects found."
+    fi
+}
+
+# Activate imported project (move to active)
+activate_imported_project() {
+    list_imported_projects
+    read -p "Enter project name to activate: " project_name
+    
+    imported_dir="$DEV_DIR/projects/imported/$project_name"
+    active_dir="$DEV_DIR/projects/active/$project_name"
+    
+    if [ -d "$imported_dir" ]; then
+        mv "$imported_dir" "$active_dir"
+        echo -e "${GREEN}Project '$project_name' activated and moved to active directory!${NC}"
+    else
+        echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
+    fi
+}
+
+# Archive imported project (move to archived)
+archive_imported_project() {
+    list_imported_projects
+    read -p "Enter project name to archive: " project_name
+    
+    imported_dir="$DEV_DIR/projects/imported/$project_name"
+    archive_dir="$DEV_DIR/projects/archived/$project_name"
+    
+    if [ -d "$imported_dir" ]; then
+        mv "$imported_dir" "$archive_dir"
+        echo -e "${GREEN}Project '$project_name' archived directly!${NC}"
+    else
+        echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
+    fi
+}
+
+# Delete imported project
+delete_imported_project() {
+    list_imported_projects
+    read -p "Enter project name to delete: " project_name
+    
+    imported_dir="$DEV_DIR/projects/imported/$project_name"
+    
+    if [ -d "$imported_dir" ]; then
+        # Confirm deletion
+        echo -e "${RED}WARNING: This will permanently delete project '$project_name' from imported directory${NC}"
+        read -p "Are you sure you want to delete? (y/N): " confirm_delete
+        
+        if [ "$confirm_delete" = "y" ] || [ "$confirm_delete" = "Y" ]; then
+            rm -rf "$imported_dir"
+            echo -e "${GREEN}Project '$project_name' deleted from imported directory!${NC}"
+        else
+            echo -e "${YELLOW}Deletion cancelled.${NC}"
+        fi
+    else
+        echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
+    fi
+}
+# Submenu for imported projects
+manage_imported_projects() {
+    while true; do
+        echo -e "\n${YELLOW}=== Manage Imported Projects ===${NC}"
+        echo -e "1. List imported projects"
+        echo -e "2. Activate project (move to active)"
+        echo -e "3. Archive project (move to archived)"
+        echo -e "4. Delete imported project"
+        echo -e "5. Back to main menu"
+        echo -e "${YELLOW}===============================${NC}"
+        
+        read -p "Choose an option (1-5): " choice
+        
+        case $choice in
+            1) list_imported_projects ;;
+            2) activate_imported_project ;;
+            3) archive_imported_project ;;
+            4) delete_imported_project ;;
+            5) break ;;
+            *) echo -e "${RED}Invalid option!${NC}" ;;
+        esac
+    done
+}
 # Main menu
 show_menu() {
     while true; do
@@ -544,13 +632,14 @@ show_menu() {
         echo -e "5. Archive project"
         echo -e "6. Restore project"
         echo -e "7. Delete project from archives"
-        echo -e "8. Configure project languages"
-        echo -e "9. Configure archive settings"
-        echo -e "10. Batch import projects"
-        echo -e "11. Back to main menu"
+        echo -e "8. Batch import projects"
+        echo -e "9. Manage imported projects"
+        echo -e "10. Configure project languages"
+        echo -e "11. Configure archive settings"
+        echo -e "12. Back to main menu"
         echo -e "${YELLOW}=======================${NC}"
         
-        read -p "Choose an option (1-11): " choice
+        read -p "Choose an option (1-12): " choice
         
         case $choice in
             1) create_new_project ;;
@@ -560,9 +649,7 @@ show_menu() {
             5) archive_project ;;
             6) restore_project ;;
             7) delete_project ;;
-            8) configure_project_languages ;;
-            9) configure_archive_settings ;;
-            10) 
+            8) 
                 if [ -f "./batch-import-projects.sh" ]; then
                     ./batch-import-projects.sh
                 elif [ -f "$DEV_DIR/scripts/batch-import-projects.sh" ]; then
@@ -571,11 +658,15 @@ show_menu() {
                     echo -e "${RED}Batch import script not found!${NC}"
                 fi
                 ;;
-            11) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            9) manage_imported_projects ;;
+            10) configure_project_languages ;;
+            11) configure_archive_settings ;;
+            12) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
 }
+
 # Main execution
 show_menu
 

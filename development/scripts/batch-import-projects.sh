@@ -34,37 +34,34 @@ done
 batch_import_projects() {
     echo -e "${YELLOW}=== Batch Project Import ===${NC}"
     
-    read -p "Enter source directory path: " source_dir
-    read -p "Enter remote machine [user@host] (leave empty for local): " remote_machine
+    read -p "Enter source directory path (on your local machine): " source_dir
+    read -p "Enter your local machine username@hostname: " local_machine
     
-    # Validate source directory
-    if [ -z "$remote_machine" ]; then
-        # Local copy
-        if [ ! -d "$source_dir" ]; then
-            echo -e "${RED}Source directory does not exist!${NC}"
-            return 1
-        fi
-    else
-        # Remote copy - test connection
-        if ! ssh -q "$remote_machine" exit; then
-            echo -e "${RED}Cannot connect to $remote_machine${NC}"
-            return 1
-        fi
+    if [ -z "$source_dir" ] || [ -z "$local_machine" ]; then
+        echo -e "${RED}Source directory and local machine are required!${NC}"
+        return 1
     fi
     
-    # Get list of projects
-    echo -e "${BLUE}Scanning for projects...${NC}"
+    # Convert Windows paths to Unix-style for rsync
+    source_dir=$(echo "$source_dir" | sed 's/\\/\//g' | sed 's/C:/\/c/g' | sed 's/\/\//\//g')
     
-    if [ -z "$remote_machine" ]; then
-        # Local projects
-        projects=$(find "$source_dir" -maxdepth 1 -type d -not -path "$source_dir" -not -name ".*" -exec basename {} \;)
-    else
-        # Remote projects
-        projects=$(ssh "$remote_machine" "find \"$source_dir\" -maxdepth 1 -type d -not -path \"$source_dir\" -not -name \".*\" -exec basename {} \;")
+    echo -e "${BLUE}Scanning for projects on $local_machine...${NC}"
+    
+    # Get list of projects from local machine
+    projects=$(ssh "$local_machine" "find \"$source_dir\" -maxdepth 1 -type d -not -path \"$source_dir\" -not -name \".*\" -exec basename {} \; 2>/dev/null")
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to connect to $local_machine or access directory${NC}"
+        echo -e "${YELLOW}Make sure:${NC}"
+        echo -e "1. SSH key authentication is set up"
+        echo -e "2. The directory exists on your local machine"
+        echo -e "3. You have read permissions"
+        return 1
     fi
     
     if [ -z "$projects" ]; then
         echo -e "${YELLOW}No projects found in source directory.${NC}"
+        echo -e "${YELLOW}Checked: $source_dir on $local_machine${NC}"
         return 1
     fi
     
@@ -79,46 +76,39 @@ batch_import_projects() {
         return
     fi
     
-    # Import each project
+    # Import each project to imported directory
     imported_count=0
     skipped_count=0
     
     for project in $projects; do
-        target_dir="$DEV_DIR/projects/active/$project"
+        target_dir="$DEV_DIR/projects/imported/$project"
         
-        # Check if project already exists
-        if [ -d "$target_dir" ]; then
-            echo -e "${YELLOW}Skipping '$project' - already exists${NC}"
+        # Check if project already exists in any location
+        if [ -d "$DEV_DIR/projects/active/$project" ] || [ -d "$DEV_DIR/projects/archived/$project" ] || [ -d "$DEV_DIR/projects/imported/$project" ]; then
+            echo -e "${YELLOW}Skipping '$project' - already exists in projects directory${NC}"
             ((skipped_count++))
             continue
         fi
         
         echo -e "${BLUE}Importing '$project'...${NC}"
         
-        if [ -z "$remote_machine" ]; then
-            # Local copy using rsync
-            mkdir -p "$target_dir"
-            if rsync -av --progress $EXCLUDE_PATTERN "$source_dir/$project/" "$target_dir/"; then
-                echo -e "${GREEN}Successfully imported '$project'${NC}"
-                ((imported_count++))
-            else
-                echo -e "${RED}Failed to import '$project'${NC}"
-            fi
+        # Copy from local machine to imported directory
+        mkdir -p "$target_dir"
+        if rsync -av --progress -e ssh $EXCLUDE_PATTERN "$local_machine:$source_dir/$project/" "$target_dir/"; then
+            echo -e "${GREEN}Successfully imported '$project' to imported directory${NC}"
+            ((imported_count++))
         else
-            # Remote copy using rsync over ssh
-            mkdir -p "$target_dir"
-            if rsync -av --progress -e ssh $EXCLUDE_PATTERN "$remote_machine:$source_dir/$project/" "$target_dir/"; then
-                echo -e "${GREEN}Successfully imported '$project'${NC}"
-                ((imported_count++))
-            else
-                echo -e "${RED}Failed to import '$project'${NC}"
-            fi
+            echo -e "${RED}Failed to import '$project'${NC}"
         fi
     done
     
     echo -e "${GREEN}Import completed!${NC}"
-    echo -e "Imported: ${GREEN}$imported_count${NC} projects"
+    echo -e "Imported: ${GREEN}$imported_count${NC} projects to ~/devenv/development/projects/imported/"
     echo -e "Skipped: ${YELLOW}$skipped_count${NC} projects (already existed)"
+    echo -e ""
+    echo -e "${YELLOW}Next steps:${NC}"
+    echo -e "1. Use 'projects' command to manage projects"
+    echo -e "2. Move projects from imported to active/archived as needed"
 }
 
 # Main execution
