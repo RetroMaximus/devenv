@@ -197,17 +197,17 @@ configure_project_languages() {
     echo -e "${BLUE}Configuring languages for specific project...${NC}"
     
     # List projects
-    if [ -d "$DEV_DIR/projects/active" ]; then
+    if [ -d "$USER_HOME/projects/active" ]; then
         echo -e "${YELLOW}Available projects:${NC}"
-        ls "$DEV_DIR/projects/active"
+        ls "$USER_HOME/projects/active"
     else
         echo -e "${RED}No projects found!${NC}"
         return
     fi
     
     read -p "Enter project name: " project_name
-    project_dir="$DEV_DIR/projects/active/$project_name"
-    lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
+    project_dir="$USER_HOME/projects/active/$project_name"
+    lang_file="$USER_HOME/projects/languages/${project_name}.lang"
     
     if [ ! -d "$project_dir" ]; then
         echo -e "${RED}Project '$project_name' not found!${NC}"
