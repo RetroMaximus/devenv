@@ -23,7 +23,11 @@ if [ -f ~/.dev-env-config ]; then
     # Set default values if any variables are empty
     DEV_DIR="${DEV_DIR:-$USER_HOME/devenv/development}"
     EDITOR="${EDITOR:-neovim}"
+    GIT_USER="${GIT_USER:-none}"
+    GIT_PATH="${GIT_PATH:-none}"
     ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
+    ARCHIVE_PATH="${ARCHIVE_PATH:-none}"
+    OPEN_PROJECT="${OPEN_PROJECT:-}"
 #else
 #    echo -e "${RED}Configuration file not found! Please run setup-dev-env.sh first.${NC}"
 #    exit 1
@@ -84,6 +88,9 @@ save_config() {
                 CLOUD_TYPE=*)
                     echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
                     ;;
+                OPEN_PROJECT=*)
+                    echo "OPEN_PROJECT=\"$OPEN_PROJECT\"" >> "$temp_file"
+                    ;;
                 *)
                     echo "$line" >> "$temp_file"
                     ;;
@@ -98,10 +105,11 @@ save_config() {
         echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$temp_file"
         echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$temp_file"
         echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
+        echo "OPEN_PROJECT=\"$OPEN_PROJECT\"" >> "$temp_file"
     fi
     
     # Replace the original config file
-    sudo mv "$temp_file" ~/.dev-env-config
+    mv "$temp_file" ~/.dev-env-config
     echo -e "${GREEN}Configuration saved!${NC}"
 }
 
@@ -255,7 +263,16 @@ open_project() {
     
     if [ -d "$project_dir" ]; then
         cd "$project_dir" || return
+        OPEN_PROJECT="$project_name"
+        save_config
         echo -e "${GREEN}Changed to project directory: $project_dir${NC}"
+        echo -e "${GREEN}Current project: $OPEN_PROJECT${NC}"
+        
+        # Check if language config exists and show info
+        lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
+        if [ -f "$lang_file" ]; then
+            echo -e "${BLUE}Project languages:$(cat "$lang_file" | tr '\n' ' ')${NC}"
+        fi
         
         # Open in selected editor
         case $EDITOR in
@@ -267,8 +284,6 @@ open_project() {
         echo -e "${RED}Project '$project_name' not found!${NC}"
     fi
 }
-
-
 
 
 # Configure project archiving
