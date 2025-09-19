@@ -18,7 +18,7 @@ if [ -f ~/.dev-env-config ]; then
     ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
     ARCHIVE_PATH="${ARCHIVE_PATH:-none}"
     OPEN_PROJECT="${OPEN_PROJECT:-none}"
-
+fi
 
 # Clone GitHub repository
 clone_repo() {
@@ -500,5 +500,7 @@ show_menu() {
         esac
     done
 }
+
 # Main execution
 show_menu
+
