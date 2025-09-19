@@ -7,6 +7,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
+
 # Load configuration
 if [ -f ~/.dev-env-config ]; then
     source ~/.dev-env-config
@@ -344,13 +350,17 @@ restore_project() {
 
 # Configure languages for project
 configure_project_languages() {
+    
+    
+ 
     if [ -f "./language-manager.sh" ]; then
-        ./language-manager.sh
+        sudo bash ./language-manager.sh
     elif [ -f "$DEV_DIR/scripts/language-manager.sh" ]; then
-        bash "$DEV_DIR/scripts/language-manager.sh"
+        sudo bash "$DEV_DIR/scripts/language-manager.sh"
     else
-        echo -e "${RED}Language manager script not found!${NC}"
+        echo -e "${RED}Language script not found!${NC}"
     fi
+
 }
 
 # Configure archive settings
@@ -536,10 +546,11 @@ show_menu() {
         echo -e "7. Delete project from archives"
         echo -e "8. Configure project languages"
         echo -e "9. Configure archive settings"
-        echo -e "10. Back to main menu"
+        echo -e "10. Batch import projects"
+        echo -e "11. Back to main menu"
         echo -e "${YELLOW}=======================${NC}"
         
-        read -p "Choose an option (1-10): " choice
+        read -p "Choose an option (1-11): " choice
         
         case $choice in
             1) create_new_project ;;
@@ -551,12 +562,20 @@ show_menu() {
             7) delete_project ;;
             8) configure_project_languages ;;
             9) configure_archive_settings ;;
-            10) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            10) 
+                if [ -f "./batch-import-projects.sh" ]; then
+                    ./batch-import-projects.sh
+                elif [ -f "$DEV_DIR/scripts/batch-import-projects.sh" ]; then
+                    bash "$DEV_DIR/scripts/batch-import-projects.sh"
+                else
+                    echo -e "${RED}Batch import script not found!${NC}"
+                fi
+                ;;
+            11) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
 }
-
 # Main execution
 show_menu
 
