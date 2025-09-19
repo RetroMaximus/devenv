@@ -136,7 +136,7 @@ setup_git() {
     echo -e "${GREEN}Git configuration set up!${NC}"
 }
 
-# Create development directory structure
+
 # Create development directory structure
 create_dev_structure() {
     echo -e "${BLUE}Creating development directory structure...${NC}"
@@ -223,7 +223,7 @@ clone_repo() {
         project_name=$(basename "$repo_url" .git)
     fi
     
-    target_dir="$DEV_DIR/projects/active/$project_name"
+    target_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$target_dir" ]; then
         echo -e "${RED}Project '$project_name' already exists!${NC}"
