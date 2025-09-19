@@ -140,7 +140,7 @@ setup_git() {
 create_dev_structure() {
     echo -e "${BLUE}Creating development directory structure...${NC}"
     sudo mkdir -p "$DEV_DIR"/{projects,temp,backups,scripts,configs}
-    sudo mkdir -p "$DEV_DIR/projects"/{active,archived,languages}
+    sudo mkdir -p "$DEV_DIR/projects"/{active,imported,archived,languages}
     echo -e "${GREEN}Directory structure created in $DEV_DIR${NC}"
 }
 
