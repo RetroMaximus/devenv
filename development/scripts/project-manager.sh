@@ -61,7 +61,11 @@ list_projects() {
     else
         echo "No active projects found."
     fi
-    
+    echo -e "${YELLOW}Imported Projects${NC}"
+    if [ -d "$DEV_DIR/projects/archived" ]; then
+        ls -la "$DEV_DIR/projects/imported"
+    else
+        echo "No imported projects"
     echo -e "\n${YELLOW}Archived Projects:${NC}"
     if [ -d "$DEV_DIR/projects/archived" ]; then
         ls -la "$DEV_DIR/projects/archived"
