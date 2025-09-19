@@ -56,6 +56,7 @@ echo -e "${YELLOW}Available commands:${NC}"
 
 add_alias_if_not_exists "dev" "~/devenv/development/scripts/setup-dev-env.sh" "Main development environment menu"
 add_alias_if_not_exists "projects" "~/devenv/development/scripts/project-manager.sh" "Manage projects and repositories"
+add_alias_if_not_exists "batch-import" "~/devenv/development/scripts/batch-import-projects.sh" "Batch import projects from local or remote location"
 add_alias_if_not_exists "config-dev" "~/devenv/development/scripts/config-manager.sh" "Configure environment settings"
 add_alias_if_not_exists "lang-setup" "~/devenv/development/scripts/language-manager.sh" "Install and manage programming languages"
 add_alias_if_not_exists "set-streamer-mask" "~/devenv/development/scripts/assign-streamer-mask.sh" "Set the streamer mode mask. This can be anything you wish."
