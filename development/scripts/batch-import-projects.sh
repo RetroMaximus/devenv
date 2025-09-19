@@ -31,94 +31,63 @@ for dir in "${EXCLUDE_DIRS[@]}"; do
     EXCLUDE_PATTERN+="--exclude='$dir' "
 done
 
-# Function to normalize paths
-normalize_path() {
-    local path="$1"
-    # Convert backslashes to forward slashes
-    path=$(echo "$path" | sed 's/\\/\//g')
-    # Convert Windows drive letters to Unix style
-    path=$(echo "$path" | sed 's/^[Cc]:/\/c/')
-    path=$(echo "$path" | sed 's/^[Dd]:/\/d/')
-    # Remove any double slashes
-    path=$(echo "$path" | sed 's/\/\//\//g')
-    # Ensure no trailing slash for directory comparison
-    echo "$path" | sed 's/\/$//'
-}
-
 batch_import_projects() {
     echo -e "${YELLOW}=== Batch Project Import ===${NC}"
     
-    read -p "Enter source directory path (on your local machine): " source_dir
-    read -p "Enter your local machine username@hostname: " local_machine
+    echo -e "${YELLOW}This will copy projects FROM your local Windows machine TO this server.${NC}"
+    echo -e "${YELLOW}Make sure your local machine is accessible and has the projects.${NC}"
+    echo ""
     
-    if [ -z "$source_dir" ] || [ -z "$local_machine" ]; then
-        echo -e "${RED}Source directory and local machine are required!${NC}"
+    read -p "Enter your local Windows machine username: " local_user
+    read -p "Enter your local Windows machine IP address: " local_ip
+    read -p "Enter source directory on your local machine (e.g., C:\\pythonprojects): " source_dir
+    
+    if [ -z "$local_user" ] || [ -z "$local_ip" ] || [ -z "$source_dir" ]; then
+        echo -e "${RED}All fields are required!${NC}"
         return 1
     fi
     
-    # Normalize the source directory path
-    source_dir=$(normalize_path "$source_dir")
+    local_machine="$local_user@$local_ip"
     
-    echo -e "${BLUE}Testing connection to $local_machine...${NC}"
+    # Convert Windows path to WSL-style path for rsync
+    source_dir=$(echo "$source_dir" | sed 's/\\/\//g' | sed 's/^[Cc]://' | sed 's/\/\//\//g')
+    source_dir="/c$source_dir"
     
-    # Test SSH connection first
-    if ! ssh "$local_machine" "exit"; then
-        echo -e "${RED}Failed to connect to $local_machine${NC}"
+    echo -e "${BLUE}Testing connection to your local machine ($local_machine)...${NC}"
+    
+    # Test SSH connection to local machine
+    if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$local_machine" "exit" 2>/dev/null; then
+        echo -e "${RED}Cannot connect to $local_machine via SSH${NC}"
         echo -e "${YELLOW}Make sure:${NC}"
-        echo -e "1. SSH key authentication is set up"
-        echo -e "2. The host is reachable"
-        echo -e "3. SSH is running on the local machine"
+        echo -e "1. SSH is enabled on your Windows machine"
+        echo -e "2. Password authentication is enabled in sshd_config"
+        echo -e "3. The Windows firewall allows SSH connections"
+        echo -e "4. You know the password for $local_user"
+        echo ""
+        echo -e "${YELLOW}On Windows, enable SSH:${NC}"
+        echo -e "Settings → Apps → Optional Features → OpenSSH Server"
         return 1
     fi
     
-    echo -e "${BLUE}Checking if directory exists on $local_machine...${NC}"
+    echo -e "${BLUE}Checking if directory exists on your local machine...${NC}"
     
-    # Check if the directory exists on the remote machine
+    # Check if the directory exists on the local machine
     if ! ssh "$local_machine" "[ -d \"$source_dir\" ]"; then
-        echo -e "${RED}Directory '$source_dir' does not exist on $local_machine${NC}"
-        echo -e "${YELLOW}Trying common alternatives...${NC}"
-        
-        # Try some common alternatives
-        alternatives=(
-            "$(echo "$source_dir" | sed 's/\/c\//\/mnt\/c\//')"
-            "$(echo "$source_dir" | sed 's/^\/c\//C:\//' | sed 's/\//\\/g')"
-            "$(echo "$source_dir" | sed 's/^\/c\//\/cygdrive\/c\//')"
-            "/home/$(echo "$local_machine" | cut -d'@' -f1)/$(basename "$source_dir")"
-        )
-        
-        for alt_dir in "${alternatives[@]}"; do
-            if ssh "$local_machine" "[ -d \"$alt_dir\" ]"; then
-                echo -e "${GREEN}Found alternative directory: $alt_dir${NC}"
-                read -p "Use this directory instead? (y/N): " use_alt
-                if [ "$use_alt" = "y" ] || [ "$use_alt" = "Y" ]; then
-                    source_dir="$alt_dir"
-                    break
-                fi
-            fi
-        done
-        
-        if ! ssh "$local_machine" "[ -d \"$source_dir\" ]"; then
-            echo -e "${RED}Could not find the directory. Please check the path and try again.${NC}"
-            echo -e "${YELLOW}Common path formats:${NC}"
-            echo -e "Windows: C:\\pythonprojects, /c/pythonprojects, /mnt/c/pythonprojects"
-            echo -e "Linux: /home/username/projects, /path/to/projects"
-            return 1
-        fi
-    fi
-    
-    echo -e "${BLUE}Scanning for projects in $source_dir on $local_machine...${NC}"
-    
-    # Get list of projects from local machine using ls instead of find (more reliable)
-    projects=$(ssh "$local_machine" "ls -1 \"$source_dir\" 2>/dev/null | while read item; do if [ -d \"$source_dir/\$item\" ] && [ \"\$item\" != \".\" ] && [ \"\$item\" != \"..\" ] && [ \"\${item:0:1}\" != \".\" ]; then echo \"\$item\"; fi; done")
-    
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to list directory contents${NC}"
+        echo -e "${RED}Directory '$source_dir' does not exist on your local machine${NC}"
+        echo -e "${YELLOW}Please check the path. Common examples:${NC}"
+        echo -e "C:\\pythonprojects  →  /c/pythonprojects"
+        echo -e "D:\\projects       →  /d/projects"
+        echo -e "C:\\Users\\$local_user\\projects → /c/Users/$local_user/projects"
         return 1
     fi
     
-    if [ -z "$projects" ]; then
-        echo -e "${YELLOW}No projects found in source directory.${NC}"
-        echo -e "${YELLOW}Checked: $source_dir on $local_machine${NC}"
+    echo -e "${BLUE}Scanning for projects in $source_dir on your local machine...${NC}"
+    
+    # Get list of projects from local machine
+    projects=$(ssh "$local_machine" "cd \"$source_dir\" && ls -1d */ 2>/dev/null | sed 's/\/$//'")
+    
+    if [ $? -ne 0 ] || [ -z "$projects" ]; then
+        echo -e "${YELLOW}No project directories found in $source_dir${NC}"
         echo -e "${YELLOW}Directory contents:${NC}"
         ssh "$local_machine" "ls -la \"$source_dir\""
         return 1
@@ -138,6 +107,7 @@ batch_import_projects() {
     # Import each project to imported directory
     imported_count=0
     skipped_count=0
+    failed_count=0
     
     for project in $projects; do
         target_dir="$DEV_DIR/projects/imported/$project"
@@ -151,23 +121,23 @@ batch_import_projects() {
         
         echo -e "${BLUE}Importing '$project'...${NC}"
         
-        # Copy from local machine to imported directory
+        # Copy from local machine to imported directory using rsync
         mkdir -p "$target_dir"
         if rsync -av --progress -e ssh $EXCLUDE_PATTERN "$local_machine:$source_dir/$project/" "$target_dir/"; then
-            echo -e "${GREEN}Successfully imported '$project' to imported directory${NC}"
+            echo -e "${GREEN}Successfully imported '$project'${NC}"
             ((imported_count++))
         else
             echo -e "${RED}Failed to import '$project'${NC}"
+            ((failed_count++))
         fi
     done
     
     echo -e "${GREEN}Import completed!${NC}"
-    echo -e "Imported: ${GREEN}$imported_count${NC} projects to ~/devenv/development/projects/imported/"
+    echo -e "Imported: ${GREEN}$imported_count${NC} projects"
     echo -e "Skipped: ${YELLOW}$skipped_count${NC} projects (already existed)"
+    echo -e "Failed: ${RED}$failed_count${NC} projects"
     echo -e ""
-    echo -e "${YELLOW}Next steps:${NC}"
-    echo -e "1. Use 'projects' command to manage projects"
-    echo -e "2. Move projects from imported to active/archived as needed"
+    echo -e "${YELLOW}Projects are in: ~/devenv/development/projects/imported/${NC}"
 }
 
 # Main execution
