@@ -145,12 +145,31 @@ create_dev_structure() {
     sudo mkdir -p "$DEV_DIR"/{temp,backups,scripts,configs}
     
     # Projects and languages in separate, safer locations
-    sudo mkdir -p "$USER_HOME/projects"/{active,imported,archived}
-    sudo mkdir -p "$USER_HOME/projects/languages"/{active,archived}
+    # Only create if they don't exist to avoid overwriting
+    if [ ! -d "$USER_HOME/projects" ]; then
+        sudo mkdir -p "$USER_HOME/projects"/{active,imported,archived}
+        echo -e "${GREEN}Created projects directory structure${NC}"
+    else
+        echo -e "${YELLOW}Projects directory already exists, preserving contents${NC}"
+        # Ensure subdirectories exist
+        sudo mkdir -p "$USER_HOME/projects/active"
+        sudo mkdir -p "$USER_HOME/projects/imported"
+        sudo mkdir -p "$USER_HOME/projects/archived"
+    fi
     
-    echo -e "${GREEN}Directory structure created!${NC}"
+    if [ ! -d "$USER_HOME/projects/languages" ]; then
+        sudo mkdir -p "$USER_HOME/projects/languages"/{active,archived}
+        echo -e "${GREEN}Created languages directory structure${NC}"
+    else
+        echo -e "${YELLOW}Languages directory already exists, preserving contents${NC}"
+        # Ensure subdirectories exist
+        sudo mkdir -p "$USER_HOME/projects/languages/active"
+        sudo mkdir -p "$USER_HOME/projects/languages/archived"
+    fi
+    
+    echo -e "${GREEN}Directory structure verified!${NC}"
     echo -e "${BLUE}Projects stored in: $USER_HOME/projects${NC}"
-    echo -e "${BLUE}Development tools in: $DEV_DIR${NC}"
+
 }
 
 # Setup editor configuration
