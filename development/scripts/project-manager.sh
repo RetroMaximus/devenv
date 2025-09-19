@@ -35,7 +35,7 @@ clone_repo() {
         project_name=$(basename "$repo_url" .git)
     fi
     
-    target_dir="$DEV_DIR/projects/active/$project_name"
+    target_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$target_dir" ]; then
         echo -e "${RED}Project '$project_name' already exists!${NC}"
@@ -56,19 +56,22 @@ clone_repo() {
 # List all projects
 list_projects() {
     echo -e "${YELLOW}Active Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/active" ]; then
-        ls -la "$DEV_DIR/projects/active"
+    if [ -d "$USER_HOME/projects/active" ]; then
+        ls -la "$USER_HOME/projects/active"
     else
         echo "No active projects found."
     fi
-    echo -e "${YELLOW}Imported Projects${NC}"
-    if [ -d "$DEV_DIR/projects/archived" ]; then
-        ls -la "$DEV_DIR/projects/imported"
+    
+    echo -e "${YELLOW}Imported Projects:${NC}"
+    if [ -d "$USER_HOME/projects/imported" ]; then
+        ls -la "$USER_HOME/projects/imported"
     else
-        echo "No imported projects"
+        echo "No imported projects found."
+    fi
+    
     echo -e "\n${YELLOW}Archived Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/archived" ]; then
-        ls -la "$DEV_DIR/projects/archived"
+    if [ -d "$USER_HOME/projects/archived" ]; then
+        ls -la "$USER_HOME/projects/archived"
     else
         echo "No archived projects found."
     fi
@@ -135,7 +138,7 @@ open_project() {
     list_projects
     read -p "Enter project name to open: " project_name
     
-    project_dir="$DEV_DIR/projects/active/$project_name"
+    project_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$project_dir" ]; then
         cd "$project_dir" || return
@@ -145,7 +148,8 @@ open_project() {
         echo -e "${GREEN}Current project: $OPEN_PROJECT${NC}"
         
         # Check if language config exists and show info
-        lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
+        lang_file="$USER_HOME/projects/languages/active/${project_name}.lang"
+        lang_archive="$USER_HOME/projects/languages/archived/${project_name}.lang"
         if [ -f "$lang_file" ]; then
             echo -e "${BLUE}Project languages:$(cat "$lang_file" | tr '\n' ' ')${NC}"
         fi
@@ -240,15 +244,15 @@ archive_to_local_only() {
     
     echo -e "${BLUE}Archiving locally...${NC}"
     
-    archive_dir="$DEV_DIR/projects/archived/$project_name"
-    lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
-    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
+    archive_dir="$USER_HOME/projects/archived/$project_name"
+    lang_file="$USER_HOME/projects/languages/active/${project_name}.lang"
+    lang_archive="$USER_HOME/projects/languages/archived/${project_name}.lang"
     
     if [ -d "$project_dir" ]; then
         sudo mv "$project_dir" "$archive_dir"
         # Also archive language config if exists
         if [ -f "$lang_file" ]; then
-            sudo mkdir -p "$DEV_DIR/projects/languages/archived"
+            sudo mkdir -p "$USER_HOME/projects/languages/archived"
             sudo mv "$lang_file" "$lang_archive"
         fi
         echo -e "${GREEN}Project '$project_name' archived locally!${NC}"
@@ -264,7 +268,7 @@ archive_project() {
     list_projects
     read -p "Enter project name to archive: " project_name
     
-    project_dir="$DEV_DIR/projects/active/$project_name"
+    project_dir="$USER_HOME/projects/active/$project_name"
     
     if [ ! -d "$project_dir" ]; then
         echo -e "${RED}Project '$project_name' not found!${NC}"
@@ -326,8 +330,8 @@ archive_project() {
 # Restore project
 restore_project() {
     echo -e "${YELLOW}Archived Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/archived" ]; then
-        ls -la "$DEV_DIR/projects/archived"
+    if [ -d "$USER_HOME/projects/archived" ]; then
+        ls -la "$USER_HOME/projects/archived"
     else
         echo "No archived projects found."
         return
@@ -335,10 +339,10 @@ restore_project() {
     
     read -p "Enter project name to restore: " project_name
     
-    active_dir="$DEV_DIR/projects/active/$project_name"
-    archive_dir="$DEV_DIR/projects/archived/$project_name"
-    lang_file="$DEV_DIR/projects/languages/${project_name}.lang"
-    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
+    active_dir="$USER_HOME/projects/active/$project_name"
+    archive_dir="$USER_HOME/projects/archived/$project_name"
+    lang_file="$USER_HOME/projects/languages/active/${project_name}.lang"
+    lang_archive="$USER_HOME/projects/languages/archived/${project_name}.lang"
     
     if [ -d "$archive_dir" ]; then
         mv "$archive_dir" "$active_dir"
@@ -421,7 +425,7 @@ configure_archive_settings() {
 create_new_project() {
     read -p "Enter project name: " project_name
     
-    target_dir="$DEV_DIR/projects/active/$project_name"
+    target_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$target_dir" ]; then
         echo -e "${RED}Project '$project_name' already exists!${NC}"
@@ -465,13 +469,13 @@ create_new_project() {
 # Delete project from archives
 delete_project() {
     echo -e "${YELLOW}Archived Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/archived" ]; then
-        archived_projects=$(ls "$DEV_DIR/projects/archived")
+    if [ -d "$USER_HOME/projects/archived" ]; then
+        archived_projects=$(ls "$USER_HOME/projects/archived")
         if [ -z "$archived_projects" ]; then
             echo "No archived projects found."
             return
         fi
-        ls -la "$DEV_DIR/projects/archived"
+        ls -la "$USER_HOME/projects/archived"
     else
         echo "No archived projects found."
         return
@@ -480,13 +484,13 @@ delete_project() {
     read -p "Enter project name to delete: " project_name
     
     # Check if project is active (should not delete active projects)
-    if [ -d "$DEV_DIR/projects/active/$project_name" ]; then
+    if [ -d "$USER_HOME/projects/active/$project_name" ]; then
         echo -e "${RED}Cannot delete active project! Please archive it first.${NC}"
         return 1
     fi
     
-    archive_dir="$DEV_DIR/projects/archived/$project_name"
-    lang_archive="$DEV_DIR/projects/languages/archived/${project_name}.lang"
+    archive_dir="$USER_HOME/projects/archived/$project_name"
+    lang_archive="$USER_HOME/projects/languages/archived/${project_name}.lang"
     
     if [ -d "$archive_dir" ]; then
         # Confirm deletion
@@ -541,8 +545,8 @@ delete_project() {
 # List imported projects
 list_imported_projects() {
     echo -e "${YELLOW}Imported Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/imported" ]; then
-        ls -la "$DEV_DIR/projects/imported"
+    if [ -d "$USER_HOME/projects/imported" ]; then
+        ls -la "$USER_HOME/projects/imported"
     else
         echo "No imported projects found."
     fi
@@ -553,8 +557,8 @@ activate_imported_project() {
     list_imported_projects
     read -p "Enter project name to activate: " project_name
     
-    imported_dir="$DEV_DIR/projects/imported/$project_name"
-    active_dir="$DEV_DIR/projects/active/$project_name"
+    imported_dir="$USER_HOME/projects/imported/$project_name"
+    active_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$imported_dir" ]; then
         mv "$imported_dir" "$active_dir"
@@ -569,8 +573,8 @@ archive_imported_project() {
     list_imported_projects
     read -p "Enter project name to archive: " project_name
     
-    imported_dir="$DEV_DIR/projects/imported/$project_name"
-    archive_dir="$DEV_DIR/projects/archived/$project_name"
+    imported_dir="$USER_HOME/projects/imported/$project_name"
+    archive_dir="$USER_HOME/projects/archived/$project_name"
     
     if [ -d "$imported_dir" ]; then
         mv "$imported_dir" "$archive_dir"
@@ -585,7 +589,7 @@ delete_imported_project() {
     list_imported_projects
     read -p "Enter project name to delete: " project_name
     
-    imported_dir="$DEV_DIR/projects/imported/$project_name"
+    imported_dir="$USER_HOME/projects/imported/$project_name"
     
     if [ -d "$imported_dir" ]; then
         # Confirm deletion

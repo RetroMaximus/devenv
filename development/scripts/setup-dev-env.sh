@@ -137,11 +137,20 @@ setup_git() {
 }
 
 # Create development directory structure
+# Create development directory structure
 create_dev_structure() {
     echo -e "${BLUE}Creating development directory structure...${NC}"
-    sudo mkdir -p "$DEV_DIR"/{projects,temp,backups,scripts,configs}
-    sudo mkdir -p "$DEV_DIR/projects"/{active,imported,archived,languages}
-    echo -e "${GREEN}Directory structure created in $DEV_DIR${NC}"
+    
+    # Main development directory (can be easily replaced)
+    sudo mkdir -p "$DEV_DIR"/{temp,backups,scripts,configs}
+    
+    # Projects and languages in separate, safer locations
+    sudo mkdir -p "$USER_HOME/projects"/{active,imported,archived}
+    sudo mkdir -p "$USER_HOME/projects/languages"/{active,archived}
+    
+    echo -e "${GREEN}Directory structure created!${NC}"
+    echo -e "${BLUE}Projects stored in: $USER_HOME/projects${NC}"
+    echo -e "${BLUE}Development tools in: $DEV_DIR${NC}"
 }
 
 # Setup editor configuration
@@ -232,18 +241,26 @@ clone_repo() {
     fi
 }
 
+
 # List all projects
 list_projects() {
     echo -e "${YELLOW}Active Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/active" ]; then
-        ls -la "$DEV_DIR/projects/active"
+    if [ -d "$USER_HOME/projects/active" ]; then
+        ls -la "$USER_HOME/projects/active"
     else
         echo "No active projects found."
     fi
     
+    echo -e "${YELLOW}Imported Projects:${NC}"
+    if [ -d "$USER_HOME/projects/imported" ]; then
+        ls -la "$USER_HOME/projects/imported"
+    else
+        echo "No imported projects found."
+    fi
+    
     echo -e "\n${YELLOW}Archived Projects:${NC}"
-    if [ -d "$DEV_DIR/projects/archived" ]; then
-        ls -la "$DEV_DIR/projects/archived"
+    if [ -d "$USER_HOME/projects/archived" ]; then
+        ls -la "$USER_HOME/projects/archived"
     else
         echo "No archived projects found."
     fi
