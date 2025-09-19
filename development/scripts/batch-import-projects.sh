@@ -48,7 +48,7 @@ batch_import_projects() {
     echo -e "${BLUE}Scanning for projects on $local_machine...${NC}"
     
     # Get list of projects from local machine
-    projects=$(ssh "$local_machine" "find \"$source_dir\" -maxdepth 1 -type d -not -path \"$source_dir\" -not -name \".*\" -exec basename {} \; 2>/dev/null")
+    projects=$(sudo ssh "$local_machine" "sudo find \"$source_dir\" -maxdepth 1 -type d -not -path \"$source_dir\" -not -name \".*\" -exec basename {} \; 2>/dev/null")
     
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to connect to $local_machine or access directory${NC}"
