@@ -324,20 +324,49 @@ df -h -x tmpfs
 }
 
 # Main menu
+
 show_menu() {
+while true; do
+        echo -e "\n${YELLOW}=== Dev Env ===============================${NC}"
+        echo -e "1. Projects Manager"
+        echo -e "2. Configuation"
+        echo -e "3. Exit"
+        echo -e "${YELLOW}=============================================${NC}"
+
+        read -p "Choose an option (1-11): " choice
+        
+        case $choice in
+            1) 
+                # Launch the project manager script
+                if [ -f "./project-manager.sh" ]; then
+                    bash ./project-manager.sh
+                elif [ -f "$DEV_DIR/scripts/project-manager.sh" ]; then
+                    bash "$DEV_DIR/scripts/project-manager.sh"
+                else
+                    echo -e "${RED}Project manager script not found!${NC}"
+                fi
+                ;;
+            2) show_config_menu ;;
+            3) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            *) echo -e "${RED}Invalid option!${NC}" ;;
+        esac    
+
+}
+
+
+show_config_menu() {
     while true; do
-        echo -e "\n${YELLOW}=== Raspberry Pi Development Environment ===${NC}"
+        echo -e "\n${YELLOW}=== Dev Env - Config ======================${NC}"
         echo -e "1. Update RaspberryPi packages"
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
         echo -e "4. Setup editor ($EDITOR)"
         echo -e "5. Change editor preference"
         echo -e "6. Install programming languages"
-        echo -e "7. Projects Manager"
-        echo -e "8. Configure project archiving"
-        echo -e "9. Show Filesystem Usage"        
-        echo -e "10. Show Configuration"
-        echo -e "11. Exit"
+        echo -e "7. Configure project archiving"
+        echo -e "8. Show Filesystem Usage"        
+        echo -e "9. Show Configuration"
+        echo -e "10. Back to Main menu"
         echo -e "${YELLOW}=============================================${NC}"
         
         read -p "Choose an option (1-11): " choice
@@ -349,20 +378,10 @@ show_menu() {
             4) setup_editor ;;
             5) change_editor ;;
             6) install_languages ;;
-            7) 
-                # Launch the project manager script
-                if [ -f "./project-manager.sh" ]; then
-                    bash ./project-manager.sh
-                elif [ -f "$DEV_DIR/scripts/project-manager.sh" ]; then
-                    bash "$DEV_DIR/scripts/project-manager.sh"
-                else
-                    echo -e "${RED}Project manager script not found!${NC}"
-                fi
-                ;;
-            8) configure_archive ;;
-            9) env_size ;;
-            10) show_config ;;
-            11) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            7) configure_archive ;;
+            8) env_size ;;
+            9) show_config ;;
+            10) show_menu ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
