@@ -312,6 +312,7 @@ show_config() {
     echo "Archive Type: $ARCHIVE_TYPE"
     echo "Archive Path: $ARCHIVE_PATH"
     echo "Cloud Type: $CLOUD_TYPE"
+    echo "Opened Project: $OPEN_PROJECT"
     echo -e "\n${YELLOW}Directory Structure:${NC}"
     tree -d "$DEV_DIR" 2>/dev/null || ls -la "$DEV_DIR"
 }
