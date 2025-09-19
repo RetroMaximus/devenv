@@ -28,6 +28,7 @@ if [ -f ~/.dev-env-config ]; then
     ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
     ARCHIVE_PATH="${ARCHIVE_PATH:-none}"
     OPEN_PROJECT="${OPEN_PROJECT:-none}"
+
 #else
 #    echo -e "${RED}Configuration file not found! Please run './quick-setup.sh' first without quotes.${NC}"
 #    exit 1
@@ -326,7 +327,7 @@ df -h -x tmpfs
 # Main menu
 
 show_menu() {
-while true; do
+    while true; do
         echo -e "\n${YELLOW}=== Dev Env ===============================${NC}"
         echo -e "1. Projects Manager"
         echo -e "2. Configuation"
@@ -350,7 +351,7 @@ while true; do
             3) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
-
+    done
 }
 
 
