@@ -15,7 +15,7 @@ fi
 
 # Configuration file
 CONFIG_FILE="$USER_HOME/.dev-env-config"
-source ${CONFIG_FILE}
+#source ${CONFIG_FILE}
 
 # Load configuration
 if [ -f ~/.dev-env-config ]; then
@@ -27,9 +27,9 @@ if [ -f ~/.dev-env-config ]; then
     GIT_PATH="${GIT_PATH:-none}"
     ARCHIVE_TYPE="${ARCHIVE_TYPE:-none}"
     ARCHIVE_PATH="${ARCHIVE_PATH:-none}"
-    OPEN_PROJECT="${OPEN_PROJECT:-}"
+    OPEN_PROJECT="${OPEN_PROJECT:-none}"
 #else
-#    echo -e "${RED}Configuration file not found! Please run setup-dev-env.sh first.${NC}"
+#    echo -e "${RED}Configuration file not found! Please run './quick-setup.sh' first without quotes.${NC}"
 #    exit 1
 fi
 
@@ -46,6 +46,7 @@ load_config() {
         ARCHIVE_TYPE="none"
         ARCHIVE_PATH="none"
         CLOUD_TYPE="none"
+        OPEN_PROJECT="none"
         # Create the config file with defaults
         save_config
     fi
