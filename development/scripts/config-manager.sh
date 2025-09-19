@@ -14,7 +14,7 @@ else
 fi
 # Configuration file
 
-CONFIG_FILE="~/.dev-env-config"
+CONFIG_FILE="$USER_HOME/.dev-env-config"
 
 # Load or create configuration
 load_config() {
@@ -24,12 +24,12 @@ load_config() {
         # Set default values
         DEV_DIR="$USER_HOME/devenv/development"
         EDITOR="neovim"
-        GIT_USER=""
-        GIT_EMAIL=""
+        GIT_USER="none"
+        GIT_EMAIL="none"
         ARCHIVE_TYPE="none"
-        ARCHIVE_PATH=""
-        CLOUD_TYPE=""
-        
+        ARCHIVE_PATH="none"
+        CLOUD_TYPE="none"
+        OPEN_PROJECT="none"
         # Create the config file with defaults
         save_config
     fi
@@ -66,6 +66,9 @@ save_config() {
                 CLOUD_TYPE=*)
                     echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
                     ;;
+                OPEN_PROJECT=*)
+                    echo "OPEN_PROJECT=\"$OPEN_PROJECT\"" >> "$temp_file"
+                    ;;
                 *)
                     echo "$line" >> "$temp_file"
                     ;;
@@ -80,6 +83,7 @@ save_config() {
         echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" >> "$temp_file"
         echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" >> "$temp_file"
         echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" >> "$temp_file"
+        echo "OPEN_PROJECT=\"$OPEN_PROJECT\"" >> "$temp_file"
     fi
     
     # Replace the original config file

@@ -41,20 +41,13 @@ load_config() {
         # Default values
         DEV_DIR="$USER_HOME/devenv/development"
         EDITOR="neovim"
-        GIT_USER=""
-        GIT_EMAIL=""
+        GIT_USER="none"
+        GIT_EMAIL="none"
         ARCHIVE_TYPE="none"
-        ARCHIVE_PATH=""
-        CLOUD_TYPE=""
-        # Create default config
-        echo "DEV_DIR=\"$DEV_DIR\"" > "$CONFIG_FILE"
-        echo "EDITOR=\"$EDITOR\"" > "$CONFIG_FILE"
-
-        echo "GIT_USER=\"$GIT_USER\"" > "$CONFIG_FILE"
-        echo "GIT_EMAIL=\"$GIT_EMAIL\"" > "$CONFIG_FILE"
-        echo "ARCHIVE_TYPE=\"$ARCHIVE_TYPE\"" > "$CONFIG_FILE"
-        echo "ARCHIVE_PATH=\"$ARCHIVE_PATH\"" > "$CONFIG_FILE"
-        echo "CLOUD_TYPE=\"$CLOUD_TYPE\"" > "$CONFIG_FILE"
+        ARCHIVE_PATH="none"
+        CLOUD_TYPE="none"
+        # Create the config file with defaults
+        save_config
     fi
 }
 
