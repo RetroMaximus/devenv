@@ -184,11 +184,12 @@ lang-setup # Install programming languages
 The scripts create this organized structure:
 
 ```
+
+~/ projects/
+├── active/ # Currently working projects
+├── archived/ # Completed or inactive projects
+└── languages/ # Project-language configuration files
 ~/development/
-├── projects/
-│ ├── active/ # Currently working projects
-│ ├── archived/ # Completed or inactive projects
-│ └── languages/ # Project-language configuration files
 ├── temp/ # Temporary files
 ├── backups/ # Project backups
 ├── scripts/ # Your custom scripts
@@ -328,5 +329,6 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
