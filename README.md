@@ -3,6 +3,8 @@ Raspberry Pi Headless Development Environment
 A comprehensive setup for turning a headless Raspberry Pi into a powerful SSH-accessible development environment with efficient GitHub repository management, programming language support, and minimal storage/memory usage.
 📋 Prerequisites
 
+These scripts have been tested with a RaspberryPi 3
+
 Before using these scripts, you need to set up your Raspberry Pi with a headless OS:
 Step 1: Download Raspberry Pi Imager
 
@@ -329,6 +331,7 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
 
