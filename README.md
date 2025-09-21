@@ -184,6 +184,101 @@ For limited storage Raspberry Pi models, these strategies help:
 
     Remove unused languages: Use the language manager to clean up
 ```
+📚 Help Documentation Generation
+
+The environment includes an advanced help documentation generator that automatically creates comprehensive documentation for your projects:
+
+Features:
+
+    Multi-language support: Parses Python, JavaScript, Go, Rust, Java, Ruby, PHP, .NET, and C/C++ code
+
+    Automatic detection: Uses project .lang files to determine which languages to process
+
+    Two documentation types:
+
+        Developer help: Detailed technical documentation with all methods and parameters
+
+        User help: Clean, simplified documentation for end-users
+
+    Smart exclusion: Skips generated files, dependencies, and build artifacts
+
+    Table of Contents: Automatic TOC generation with navigation links
+
+    Code examples: Generates usage examples for all functions and methods
+
+Configuration:
+
+    Toggle parameter details with SHOW_EXTRA_ARGS setting
+
+    Customize excluded directories and file patterns
+
+    Configure output format (Markdown, HTML, plain text)
+
+    Set visibility filters for public/private members
+
+🖥️ Cluster Management
+
+The cluster manager allows you to create and manage a Raspberry Pi cluster for distributed computing:
+
+Features:
+
+    Node management: Add/remove Raspberry Pi nodes from the cluster
+
+    Resource monitoring: Real-time monitoring of CPU, memory, and disk usage across all nodes
+
+    Workload distribution: Distribute commands and tasks across the cluster
+
+    Threshold-based automation: Automatically redistribute work when resource thresholds are exceeded
+
+    SSH key management: Set up password-less access to all cluster nodes
+
+    Flexible configuration: Customizable thresholds, check intervals, and node roles
+
+Cluster Node Roles:
+
+    Compute nodes: Handle processing and computation tasks
+
+    Storage nodes: Provide distributed storage capacity
+
+    Hybrid nodes: Combine both compute and storage capabilities
+
+Setup Process:
+
+    Configure master node IP and credentials
+
+    Add slave nodes using their IP addresses
+
+    Set up SSH keys for password-less access
+
+    Configure resource thresholds and automation settings
+
+    Monitor cluster status and distribute workloads
+
+Example Commands:
+```bash
+
+# Monitor cluster status
+cluster-manager.sh monitor
+
+# Add a node
+cluster-manager.sh add-node
+
+# Distribute a command across all nodes
+cluster-manager.sh distribute "sudo apt update"
+```
+
+Best Practices:
+
+    Start with 2-3 nodes and expand as needed
+
+    Set conservative thresholds initially (70-80%)
+
+    Use identical Raspberry Pi models for balanced performance
+
+    Regularly monitor cluster health and resource usage
+
+    Keep all nodes updated with the same software versions
+
 🔒 Security Notes
 ```
     Change the default SSH password immediately
@@ -233,6 +328,7 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
 
