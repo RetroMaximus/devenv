@@ -380,11 +380,13 @@ show_menu() {
     while true; do
         echo -e "\n${YELLOW}=== Dev Env ===============================${NC}"
         echo -e "1. Projects Manager"
-        echo -e "2. Configuation"
-        echo -e "3. Exit"
+        echo -e "2. Configuration"
+        echo -e "3. Cluster Manager"
+        echo -e "4. Help Generator"
+        echo -e "5. Exit"
         echo -e "${YELLOW}=============================================${NC}"
 
-        read -p "Choose an option (1-11): " choice
+        read -p "Choose an option (1-5): " choice
         
         case $choice in
             1) 
@@ -398,7 +400,27 @@ show_menu() {
                 fi
                 ;;
             2) show_config_menu ;;
-            3) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            3) 
+                # Launch the cluster manager script
+                if [ -f "./cluster-manager.sh" ]; then
+                    bash ./cluster-manager.sh
+                elif [ -f "$DEV_DIR/scripts/cluster-manager.sh" ]; then
+                    bash "$DEV_DIR/scripts/cluster-manager.sh
+                else
+                    echo -e "${RED}Cluster manager script not found!${NC}"
+                fi
+                ;;
+            4)
+                # Launch the help generator script
+                if [ -f "./help-gen.sh" ]; then
+                    bash ./help-gen.sh
+                elif [ -f "$DEV_DIR/scripts/help-gen.sh" ]; then
+                    bash "$DEV_DIR/scripts/help-gen.sh"
+                else
+                    echo -e "${RED}Help generator script not found!${NC}"
+                fi
+                ;;
+            5) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
