@@ -78,73 +78,6 @@ The quick setup will:
 
     Install programming languages (optional)
 
-📁 Script Overview
-setup-dev-env.sh
-
-The main menu-driven script for setting up and managing your development environment.
-
-Features:
-
-    Package installation (Git, Neovim, Emacs, Nano, Tmux, etc.)
-
-    Git configuration setup
-
-    Development directory structure creation
-
-    Editor configuration
-
-    Project management interface
-
-    Programming language installation
-
-project-manager.sh
-
-Handles GitHub repository cloning and project organization.
-
-Features:
-
-    Clone repositories from GitHub
-
-    Organize projects into active/archived categories
-
-    Quick navigation between projects
-
-    Project archiving and restoration
-
-    Project-specific language configuration
-
-config-manager.sh
-
-Manages environment configuration and settings.
-
-Features:
-
-    View current configuration
-
-    Change editor preference (Neovim, Emacs, or Nano)
-
-    Modify development directory location
-
-    Edit configuration files directly
-
-    Install/remove programming languages
-
-quick-setup.sh
-
-Automates the initial setup process for a new environment.
-language-manager.sh
-
-Handles programming language installation and management.
-
-Features:
-
-    Install multiple programming languages
-
-    Project-specific language configuration
-
-    Version management
-
-    Dependency installation
 
 🛠 Supported Programming Languages
 
@@ -332,6 +265,7 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
 
