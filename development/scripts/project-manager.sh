@@ -585,17 +585,28 @@ archive_imported_project() {
     fi
 }
 
-# Archive all imported projects (move all to archived)
+
+# Archive all imported projects (move all contents to archived)
 archive_all_imported_projects() {
-  
-    imported_dir="$USER_HOME/projects/imported/*"
-    archive_dir="$USER_HOME/projects/archived/"
+    imported_dir="$USER_HOME/projects/imported"
+    archive_dir="$USER_HOME/projects/archived"
     
-    if [ -d "$imported_dir" ]; then
-        sudo mv "$imported_dir" "$archive_dir"
-        echo -e "${GREEN}Project '$project_name' archived directly!${NC}"
+    if [ ! -d "$imported_dir" ]; then
+        echo -e "${YELLOW}Imported directory '$imported_dir' does not exist!${NC}"
+        return 1
+    fi
+    if [ -z "$(ls -A "$imported_dir")" ]; then
+        echo -e "${YELLOW}No projects found in imported directory to archive!${NC}"
+        return 1
+    fi
+    sudo mkdir -p "$archive_dir"
+    sudo mv "$imported_dir"/* "$archive_dir" 2>/dev/null
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}All imported projects archived successfully!${NC}"
     else
-        echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
+        echo -e "${RED}Failed to archive some projects!${NC}"
+        return 1
     fi
 }
 
