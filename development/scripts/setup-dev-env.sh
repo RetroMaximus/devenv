@@ -380,13 +380,11 @@ show_menu() {
     while true; do
         echo -e "\n${YELLOW}=== Dev Env ===============================${NC}"
         echo -e "1. Projects Manager"
-        echo -e "2. Configuration"
-        echo -e "3. Cluster Manager"
-        echo -e "4. Help Generator"
-        echo -e "5. Exit"
+        echo -e "2. Configuation"
+        echo -e "3. Exit"
         echo -e "${YELLOW}=============================================${NC}"
 
-        read -p "Choose an option (1-5): " choice
+        read -p "Choose an option (1-11): " choice
         
         case $choice in
             1) 
@@ -400,31 +398,12 @@ show_menu() {
                 fi
                 ;;
             2) show_config_menu ;;
-            3) 
-                # Launch the cluster manager script
-                if [ -f "./cluster-manager.sh" ]; then
-                    bash ./cluster-manager.sh
-                elif [ -f "$DEV_DIR/scripts/cluster-manager.sh" ]; then
-                    bash "$DEV_DIR/scripts/cluster-manager.sh
-                else
-                    echo -e "${RED}Cluster manager script not found!${NC}"
-                fi
-                ;;
-            4)
-                # Launch the help generator script
-                if [ -f "./help-gen.sh" ]; then
-                    bash ./help-gen.sh
-                elif [ -f "$DEV_DIR/scripts/help-gen.sh" ]; then
-                    bash "$DEV_DIR/scripts/help-gen.sh"
-                else
-                    echo -e "${RED}Help generator script not found!${NC}"
-                fi
-                ;;
-            5) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
+            3) echo -e "${GREEN}Goodbye!${NC}"; exit 0 ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
 }
+
 
 show_config_menu() {
     while true; do
@@ -432,14 +411,13 @@ show_config_menu() {
         echo -e "1. Update RaspberryPi packages"
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
-        echo -e "4. Setup editor (${EDITOR})"
+        echo -e "4. Setup editor ($EDITOR)"
         echo -e "5. Change editor preference"
         echo -e "6. Install programming languages"
         echo -e "7. Configure project archiving"
         echo -e "8. Show Filesystem Usage"        
         echo -e "9. Show Configuration"
-        echo -e "10. Cluster Configuration"
-        echo -e "11. Back to Main menu"
+        echo -e "10. Back to Main menu"
         echo -e "${YELLOW}=============================================${NC}"
         
         read -p "Choose an option (1-11): " choice
@@ -454,21 +432,13 @@ show_config_menu() {
             7) configure_archive ;;
             8) env_size ;;
             9) show_config ;;
-            10) 
-                # Launch cluster configuration
-                if [ -f "./cluster-manager.sh" ]; then
-                    source ./cluster-manager.sh && configure_cluster
-                elif [ -f "$DEV_DIR/scripts/cluster-manager.sh" ]; then
-                    source "$DEV_DIR/scripts/cluster-manager.sh" && configure_cluster
-                else
-                    echo -e "${RED}Cluster manager script not found!${NC}"
-                fi
-                ;;
-            11) show_menu ;;
+            10) show_menu ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac    
     done
 }
+
+
 # Main execution
 load_config
 echo -e ""
