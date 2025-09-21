@@ -8,9 +8,9 @@ These scripts have been tested with a RaspberryPi 3
 Before using these scripts, you need to set up your Raspberry Pi with a headless OS:
 Step 1: Download Raspberry Pi Imager
 
-    Downlaod from [raspberrypi.com/software/operating-systems/](https://www.raspberrypi.com/software/operating-systems/)
+Downlaod from [raspberrypi.com/software/operating-systems/](https://www.raspberrypi.com/software/operating-systems/)
 
-    Available for Windows, macOS, and Ubuntu
+Available for Windows, macOS, and Ubuntu
     
 
 Step 2: Write OS to SD Card
@@ -332,6 +332,7 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
 
