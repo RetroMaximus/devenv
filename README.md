@@ -166,42 +166,10 @@ projects
 Choose option to archive a project
 
 ```
-🌟 Language Installation Menu
-
-The language manager provides these options:
-
-```
-=== Programming Language Setup ===
-
-    Install Python environment
-
-    Install Node.js environment
-
-    Install Go language
-
-    Install Rust language
-
-    Install Java environment
-
-    Install Ruby environment
-
-    Install PHP environment
-
-    Install C/C++ tools
-
-    Install .NET SDK
-
-    Install all languages (not recommended on Pi)
-
-    Configure languages for specific project
-
-    Show installed languages
-
-    Back to main menu
-    ```
 
 💾 Storage Management
 
+```
 For limited storage Raspberry Pi models, these strategies help:
 
     Selective language installation: Only install languages you actually use
@@ -215,9 +183,9 @@ For limited storage Raspberry Pi models, these strategies help:
     Use .git shallow clones: ```git clone --depth 1``` for large repos
 
     Remove unused languages: Use the language manager to clean up
-
+```
 🔒 Security Notes
-
+```
     Change the default SSH password immediately
 
     Use SSH keys instead of password authentication
@@ -227,7 +195,7 @@ For limited storage Raspberry Pi models, these strategies help:
     Consider setting up a firewall (ufw)
 
     Be cautious with language packages from third-party repositories
-
+```
 🤝 Contributing
 
 Feel free to submit issues and enhancement requests!
@@ -265,6 +233,7 @@ Need help?
     Create a new issue with details about your problem
 
 Note: This setup is designed for Raspberry Pi OS Lite (64-bit) but should work on other Debian-based distributions with minimal adjustments. Language availability may vary based on architecture.
+
 
 
 
