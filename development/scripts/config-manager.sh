@@ -16,6 +16,16 @@ fi
 
 CONFIG_FILE="$USER_HOME/.dev-env-config"
 
+load_sync_tools() {
+    local sync_tools_path="$DEV_DIR/development/scripts/sync-tools.sh"
+    if [ -f "$sync_tools_path" ]; then
+        source "$sync_tools_path"
+    else
+        echo -e "${RED}Sync tools not found at $sync_tools_path${NC}"
+        return 1
+    fi
+}
+
 # Load or create configuration
 load_config() {
     if [ -f ~/.dev-env-config ]; then
@@ -221,7 +231,68 @@ configure_archive() {
             ;;
     esac
 }
+# Sync tools menu
+show_sync_menu() {
+    while true; do
+        echo -e "\n${YELLOW}=== Sync Tools ===${NC}"
+        echo -e "1. Sync a project"
+        echo -e "2. Setup git auto-sync hook"
+        echo -e "3. Schedule automatic backups"
+        echo -e "4. Show sync status"
+        echo -e "5. Back to config menu"
+        echo -e "${YELLOW}===================${NC}"
 
+        read -p "Choose an option (1-5): " choice
+
+        case $choice in
+            1) sync_project_menu ;;
+            2) setup_hook_menu ;;
+            3) schedule_backup_menu ;;
+            4) show_sync_status ;;
+            5) break ;;
+            *) echo -e "${RED}Invalid option!${NC}" ;;
+        esac
+    done
+}
+
+# Helper functions for sync menu
+sync_project_menu() {
+    list_projects
+    read -p "Enter project name to sync: " project_name
+    source ~/development/scripts/sync-tools.sh
+    sync_project "$project_name"
+}
+
+setup_hook_menu() {
+    list_projects
+    read -p "Enter project name for auto-sync hook: " project_name
+    source ~/development/scripts/sync-tools.sh
+    setup_git_archiving "$project_name"
+}
+
+schedule_backup_menu() {
+    list_projects
+    read -p "Enter project name to schedule: " project_name
+    read -p "Enter schedule (daily/weekly/hourly or cron): " schedule
+    source ~/development/scripts/sync-tools.sh
+    setup_backup_schedule "$project_name" "$schedule"
+}
+
+show_sync_status() {
+    source ~/development/scripts/sync-tools.sh
+    list_sync_status
+}
+
+# List projects for selection
+list_projects() {
+    echo -e "${YELLOW}Available projects:${NC}"
+    if [ -d "$DEV_DIR/projects/active" ]; then
+        ls "$DEV_DIR/projects/active"
+    else
+        echo -e "${RED}No projects found!${NC}"
+        return 1
+    fi
+}
 # Main menu
 show_menu() {
     while true; do
@@ -230,23 +301,24 @@ show_menu() {
         echo -e "2. Change editor preference"
         echo -e "3. Change development directory"
         echo -e "4. Configure project archiving"
-        echo -e "5. Edit configuration manually"
-        echo -e "6. Back to main menu"
+        echo -e "5. Sync tools menu"
+        echo -e "6. Edit configuration manually"
+        echo -e "7. Back to main menu"
         echo -e "${YELLOW}==============================${NC}"
 
-        read -p "Choose an option (1-6): " choice
+        read -p "Choose an option (1-7): " choice
 
         case $choice in
             1) show_config ;;
             2) change_editor ;;
             3) change_dev_dir ;;
             4) configure_archive ;;
-            5) edit_config ;;
-            6) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            5) show_sync_menu ;;
+            6) edit_config ;;
+            7) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
 }
-
 # Main execution
 show_menu
