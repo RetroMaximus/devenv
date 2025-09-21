@@ -426,14 +426,13 @@ show_menu() {
     done
 }
 
-
 show_config_menu() {
     while true; do
         echo -e "\n${YELLOW}=== Dev Env - Config ======================${NC}"
         echo -e "1. Update RaspberryPi packages"
         echo -e "2. Setup Git configuration"
         echo -e "3. Create directory structure"
-        echo -e "4. Setup editor ($EDITOR)"
+        echo -e "4. Setup editor (${EDITOR})"
         echo -e "5. Change editor preference"
         echo -e "6. Install programming languages"
         echo -e "7. Configure project archiving"
