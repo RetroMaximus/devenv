@@ -128,7 +128,7 @@ save_config() {
     fi
     
     # Replace the original config file
-    mv "$temp_file" ~/.dev-env-config
+    sudo mv "$temp_file" ~/.dev-env-config
     echo -e "${GREEN}Configuration saved!${NC}"
 }
 
@@ -345,7 +345,7 @@ restore_project() {
     lang_archive="$USER_HOME/projects/languages/archived/${project_name}.lang"
     
     if [ -d "$archive_dir" ]; then
-        mv "$archive_dir" "$active_dir"
+        sudo mv "$archive_dir" "$active_dir"
         # Also restore language config if exists
         if [ -f "$lang_archive" ]; then
             sudo mv "$lang_archive" "$lang_file"
@@ -561,7 +561,7 @@ activate_imported_project() {
     active_dir="$USER_HOME/projects/active/$project_name"
     
     if [ -d "$imported_dir" ]; then
-        mv "$imported_dir" "$active_dir"
+        sudo mv "$imported_dir" "$active_dir"
         echo -e "${GREEN}Project '$project_name' activated and moved to active directory!${NC}"
     else
         echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
@@ -570,6 +570,7 @@ activate_imported_project() {
 
 # Archive imported project (move to archived)
 archive_imported_project() {
+    echo ""
     list_imported_projects
     read -p "Enter project name to archive: " project_name
     
@@ -577,7 +578,21 @@ archive_imported_project() {
     archive_dir="$USER_HOME/projects/archived/$project_name"
     
     if [ -d "$imported_dir" ]; then
-        mv "$imported_dir" "$archive_dir"
+        sudo mv "$imported_dir" "$archive_dir"
+        echo -e "${GREEN}Project '$project_name' archived directly!${NC}"
+    else
+        echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
+    fi
+}
+
+# Archive all imported projects (move all to archived)
+archive_all_imported_projects() {
+  
+    imported_dir="$USER_HOME/projects/imported/*"
+    archive_dir="$USER_HOME/projects/archived/"
+    
+    if [ -d "$imported_dir" ]; then
+        sudo mv "$imported_dir" "$archive_dir"
         echo -e "${GREEN}Project '$project_name' archived directly!${NC}"
     else
         echo -e "${RED}Project '$project_name' not found in imported directory!${NC}"
@@ -613,8 +628,9 @@ manage_imported_projects() {
         echo -e "1. List imported projects"
         echo -e "2. Activate project (move to active)"
         echo -e "3. Archive project (move to archived)"
-        echo -e "4. Delete imported project"
-        echo -e "5. Back to main menu"
+        echo -e "4. Archive all imported projects"
+        echo -e "5. Delete imported project"
+        echo -e "6. Back to main menu"
         echo -e "${YELLOW}===============================${NC}"
         
         read -p "Choose an option (1-5): " choice
@@ -623,8 +639,9 @@ manage_imported_projects() {
             1) list_imported_projects ;;
             2) activate_imported_project ;;
             3) archive_imported_project ;;
-            4) delete_imported_project ;;
-            5) break ;;
+            4) archive_all_imported_project ;;
+            5) delete_imported_project ;;
+            6) break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
