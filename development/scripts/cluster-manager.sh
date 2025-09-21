@@ -7,6 +7,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
+
 # Cluster configuration
 CLUSTER_CONFIG_DIR="$USER_HOME/.cluster"
 CLUSTER_CONFIG_FILE="$CLUSTER_CONFIG_DIR/cluster.conf"
