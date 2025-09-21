@@ -302,8 +302,10 @@ show_menu() {
         echo -e "3. Change development directory"
         echo -e "4. Configure project archiving"
         echo -e "5. Sync tools menu"
-        echo -e "6. Edit configuration manually"
-        echo -e "7. Back to main menu"
+        echo -e "6. Help generator configuration"
+        echo -e "7. Edit configuration manually"
+	
+        echo -e "8. Back to main menu"
         echo -e "${YELLOW}==============================${NC}"
 
         read -p "Choose an option (1-7): " choice
@@ -314,8 +316,9 @@ show_menu() {
             3) change_dev_dir ;;
             4) configure_archive ;;
             5) show_sync_menu ;;
-            6) edit_config ;;
-            7) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
+            6) source ~/development/scripts/help-gen.sh && configure_help_gen ;;
+            7) edit_config ;;
+            8) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;
         esac
     done
