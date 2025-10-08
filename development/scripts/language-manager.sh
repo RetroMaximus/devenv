@@ -10,6 +10,12 @@ NC='\033[0m' # No Color
 # Load configuration
 source ~/.dev-env-config
 
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
+
 # Install Python environment
 install_python() {
     echo -e "${BLUE}Installing Python environment...${NC}"

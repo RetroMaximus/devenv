@@ -90,7 +90,7 @@ save_config() {
                     echo "$line" >> "$temp_file"
                     ;;
             esac
-        done < ~/.dev-env-config
+        done < "${USER_HOME}/.dev-env-config"
     else
         # Create new config with all values
         echo "DEV_DIR=\"$DEV_DIR\"" >> "$temp_file"
@@ -104,7 +104,7 @@ save_config() {
     fi
     
     # Replace the original config file
-    mv "$temp_file" ~/.dev-env-config
+    sudo mv "$temp_file" "${USER_HOME}/.dev-env-config"
     echo -e "${GREEN}Configuration saved!${NC}"
 }
 
@@ -166,19 +166,11 @@ create_dev_structure() {
     fi
     
     if [ ! -d "$USER_HOME/projects/languages" ]; then
-        sudo mkdir -p "$USER_HOME/projects/languages"/{active,archived}
+        sudo mkdir -p "$USER_HOME/projects/languages"
         echo -e "${GREEN}Created languages directory structure${NC}"
     else
         echo -e "${YELLOW}Languages directory already exists, preserving contents${NC}"
-        # Check and create each subdirectory only if it doesn't exist
-        if [ ! -d "$USER_HOME/projects/languages/active" ]; then
-            sudo mkdir -p "$USER_HOME/projects/languages/active"
-            echo -e "${GREEN}Created languages/active directory${NC}"
-        fi
-        if [ ! -d "$USER_HOME/projects/languages/archived" ]; then
-            sudo mkdir -p "$USER_HOME/projects/languages/archived"
-            echo -e "${GREEN}Created languages/archived directory${NC}"
-        fi
+        
     fi
     
     echo -e "${GREEN}Directory structure verified!${NC}"
