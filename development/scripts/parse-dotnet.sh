@@ -43,7 +43,7 @@ parse_dotnet_file() {
     
     while IFS= read -r line; do
         # Handle XML documentation comments
-        if [[ $line =~ ^[[:space:]]*///[[:space:]]*<summary> ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*///[[:space:]]*<summary> ]]; then
             in_xml_comment=true
             current_comment=""
             comment_params=()
@@ -54,24 +54,24 @@ parse_dotnet_file() {
         
         if [ "$in_xml_comment" = true ]; then
             # Check for param tags
-            if [[ $line =~ \<param[[:space:]]+name=\"([^\"]+)\"[^>]*>([^<]+) ]]; then
+            if [[ "$line"  =~ \<param[[:space:]]+name=\"([^\"]+)\"[^>]*>([^<]+) ]]; then
                 local p_name="${BASH_REMATCH[1]}"
                 local p_desc="${BASH_REMATCH[2]}"
                 comment_params+=("$p_name: $p_desc")
             fi
             
             # Check for returns tags
-            if [[ $line =~ \<returns>([^<]+) ]]; then
+            if [[ "$line"  =~ \<returns>([^<]+) ]]; then
                 comment_returns="${BASH_REMATCH[1]}"
             fi
             
             # Check for summary content
-            if [[ $line =~ ^[[:space:]]*///[[:space:]]*([^<].+) ]] && [[ ! $line =~ \< ]]; then
+            if [[ "$line"  =~ ^[[:space:]]*///[[:space:]]*([^<].+) ]] && [[ ! "$line"  =~ \< ]]; then
                 comment_summary+="${BASH_REMATCH[1]} "
             fi
             
             # Check for end of summary
-            if [[ $line =~ \</summary> ]]; then
+            if [[ "$line"  =~ \</summary> ]]; then
                 in_xml_comment=false
                 current_comment="$comment_summary"
             fi
@@ -80,7 +80,7 @@ parse_dotnet_file() {
         fi
         
         # Class detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private|abstract|sealed|static)[[:space:]]+class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private|abstract|sealed|static)[[:space:]]+class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local class_name="${BASH_REMATCH[2]}"
             current_class="$class_name"
             current_interface=""
@@ -89,13 +89,13 @@ parse_dotnet_file() {
             class_methods=()
             output+="## Class: \`$class_name\`\n\n"
             
-            if [[ $line =~ abstract ]]; then
+            if [[ "$line"  =~ abstract ]]; then
                 output+="**Abstract class**\n\n"
             fi
-            if [[ $line =~ sealed ]]; then
+            if [[ "$line"  =~ sealed ]]; then
                 output+="**Sealed class**\n\n"
             fi
-            if [[ $line =~ static ]]; then
+            if [[ "$line"  =~ static ]]; then
                 output+="**Static class**\n\n"
             fi
             
@@ -108,7 +108,7 @@ parse_dotnet_file() {
         fi
         
         # Interface detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local interface_name="${BASH_REMATCH[2]}"
             current_interface="$interface_name"
             current_class=""
@@ -125,7 +125,7 @@ parse_dotnet_file() {
         fi
         
         # Struct detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local struct_name="${BASH_REMATCH[2]}"
             current_struct="$struct_name"
             current_class=""
@@ -142,7 +142,7 @@ parse_dotnet_file() {
         fi
         
         # Enum detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private)[[:space:]]+enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local enum_name="${BASH_REMATCH[2]}"
             current_enum="$enum_name"
             current_class=""
@@ -159,7 +159,7 @@ parse_dotnet_file() {
         fi
         
         # Method detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private|static|virtual|override|abstract|async)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private|static|virtual|override|abstract|async)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
             local modifiers="${BASH_REMATCH[1]}"
             local return_type="${BASH_REMATCH[2]}"
             local method_name="${BASH_REMATCH[3]}"
@@ -281,7 +281,7 @@ parse_dotnet_file() {
         fi
         
         # Property detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private|static)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{\s*get;\s*set;\s*\} ]] && 
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private|static)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{\s*get;\s*set;\s*\} ]] && 
            [ -n "$current_class" ]; then
             local modifiers="${BASH_REMATCH[1]}"
             local property_type="${BASH_REMATCH[2]}"
@@ -306,7 +306,7 @@ parse_dotnet_file() {
         fi
         
         # Field detection
-        if [[ $line =~ ^[[:space:]]*(public|internal|protected|private|static|readonly)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
+        if [[ "$line"  =~ ^[[:space:]]*(public|internal|protected|private|static|readonly)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
            [ -n "$current_class" ]; then
             local modifiers="${BASH_REMATCH[1]}"
             local field_type="${BASH_REMATCH[2]}"
@@ -330,9 +330,9 @@ parse_dotnet_file() {
         fi
         
         # Enum value detection
-        if [[ $line =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && [ -n "$current_enum" ]; then
+        if [[ "$line"  =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && [ -n "$current_enum" ]; then
             local enum_value="${BASH_REMATCH[1]}"
-            local enum_val=$(echo "$line" | awk -F'=' '{print $2}' | sed 's/,[[:space:]]*$//' | xargs)
+            local enum_val=$(echo ""$line" " | awk -F'=' '{print $2}' | sed 's/,[[:space:]]*$//' | xargs)
             
             output+="#### Enum Value: \`$enum_value\`\n\n"
             output+="**Value**: $enum_val\n\n"
@@ -346,7 +346,7 @@ parse_dotnet_file() {
         fi
         
         # Reset current_comment if we hit a significant non-comment line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ $line =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_xml_comment" = false ]; then
+        if [[ ! "$line"  =~ ^[[:space:]]*// ]] && [[ "$line"  =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_xml_comment" = false ]; then
             current_comment=""
         fi
         

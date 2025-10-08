@@ -32,7 +32,7 @@ extract_godoc() {
         local prev_line=$(sed "${i}q;d" "$file_path")
         
         # Stop if we hit a non-comment line
-        if [[ ! $prev_line =~ ^[[:space:]]*// ]]; then
+        if [[ ! "$prev_line" =~ ^[[:space:]]*// ]]; then
             break
         fi
         

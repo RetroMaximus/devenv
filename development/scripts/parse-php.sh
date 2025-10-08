@@ -258,8 +258,7 @@ parse_php_file() {
         fi
         
         # Property detection (class variables)
-        if [[ $line =~ ^[[:space:]]*(public|protected|private|static|var)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
-           [ -n "$current_class" ]; then
+        if [[ $line =~ ^[[:space:]]*(public|protected|private|static|var)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && [ -n "$current_class" ]; then
             local modifier="${BASH_REMATCH[1]}"
             local property_name="${BASH_REMATCH[2]}"
             

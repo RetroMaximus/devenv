@@ -42,7 +42,7 @@ parse_ruby_file() {
     
     while IFS= read -r line; do
         # Handle multi-line comments
-        if [[ $line =~ ^=begin ]]; then
+        if [[ "$line" =~ ^=begin ]]; then
             in_comment_block=true
             current_comment=""
             continue

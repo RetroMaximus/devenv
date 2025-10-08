@@ -163,8 +163,7 @@ parse_java_file() {
         fi
         
         # Method detection
-        if [[ $line =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]] || 
-           [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
+        if [[ $line =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]] || [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
             local modifier=""
             local return_type=""
             local method_name=""

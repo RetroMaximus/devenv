@@ -42,14 +42,14 @@ parse_c_cpp_file() {
     
     while IFS= read -r line; do
         # Handle multi-line comments
-        if [[ $line =~ ^[[:space:]]*/\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*/\* ]]; then
             in_multiline_comment=true
             current_comment=""
             continue
         fi
         
         if [ "$in_multiline_comment" = true ]; then
-            if [[ $line =~ \*/ ]]; then
+            if [[ "$line" =~ \*/ ]]; then
                 in_multiline_comment=false
             else
                 # Clean comment line
@@ -60,13 +60,13 @@ parse_c_cpp_file() {
         fi
         
         # Single line comments
-        if [[ $line =~ ^[[:space:]]*// ]] && [ -z "$current_comment" ]; then
+        if [[ "$line" =~ ^[[:space:]]*// ]] && [ -z "$current_comment" ]; then
             current_comment="${line#*//}"
             current_comment=$(echo "$current_comment" | xargs)
         fi
         
         # Namespace detection (C++)
-        if [[ $line =~ ^[[:space:]]*namespace[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*namespace[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local namespace_name="${BASH_REMATCH[1]}"
             current_namespace="$namespace_name"
             output+="## Namespace: \`$namespace_name\`\n\n"
@@ -80,7 +80,7 @@ parse_c_cpp_file() {
         fi
         
         # Class detection (C++)
-        if [[ $line =~ ^[[:space:]]*(class|struct)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[:{]] ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(class|struct)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[:{]] ]]; then
             local class_type="${BASH_REMATCH[1]}"
             local class_name="${BASH_REMATCH[2]}"
             
@@ -114,7 +114,7 @@ parse_c_cpp_file() {
         fi
         
         # Union detection (C/C++)
-        if [[ $line =~ ^[[:space:]]*union[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{ ]]; then
+        if [[ "$line" =~ ^[[:space:]]*union[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{ ]]; then
             local union_name="${BASH_REMATCH[1]}"
             current_union="$union_name"
             current_class=""
@@ -131,7 +131,7 @@ parse_c_cpp_file() {
         fi
         
         # Enum detection (C++11 style)
-        if [[ $line =~ ^[[:space:]]*enum[[:space:]]+(class[[:space:]]+)?([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{ ]]; then
+        if [[ "$line" =~ ^[[:space:]]*enum[[:space:]]+(class[[:space:]]+)?([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\{ ]]; then
             local enum_name="${BASH_REMATCH[2]}"
             current_enum="$enum_name"
             current_class=""
@@ -153,8 +153,8 @@ parse_c_cpp_file() {
         fi
         
         # Function detection
-        if [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]:*]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\)[[:space:]]*[^{;]*$ ]] && 
-           [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]:*]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\)[[:space:]]*[^{;]*$ ]] && 
+           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
             local return_type=$(echo "${BASH_REMATCH[1]}" | xargs)
             local func_name="${BASH_REMATCH[2]}"
             local params="${BASH_REMATCH[3]}"
@@ -264,8 +264,8 @@ parse_c_cpp_file() {
         fi
         
         # Variable declaration (members and globals)
-        if [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
-           [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
+           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
             local var_type=$(echo "${BASH_REMATCH[1]}" | xargs)
             local var_name="${BASH_REMATCH[2]}"
             
@@ -313,7 +313,7 @@ parse_c_cpp_file() {
         fi
         
         # Enum value detection (C style)
-        if [[ $line =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && [ -n "$current_enum" ]; then
+        if [[ "$line" =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && [ -n "$current_enum" ]; then
             local enum_value="${BASH_REMATCH[1]}"
             local enum_val=$(echo "$line" | awk -F'=' '{print $2}' | sed 's/,[[:space:]]*$//' | xargs)
             
@@ -329,7 +329,7 @@ parse_c_cpp_file() {
         fi
         
         # Preprocessor macros
-        if [[ $line =~ ^[[:space:]]*#define[[:space:]]+([A-Z_][A-Z0-9_]*) ]] && [ -z "$current_class" ]; then
+        if [[ "$line" =~ ^[[:space:]]*#define[[:space:]]+([A-Z_][A-Z0-9_]*) ]] && [ -z "$current_class" ]; then
             local macro_name="${BASH_REMATCH[1]}"
             local macro_value=$(echo "$line" | awk '{$1=""; $2=""; print $0}' | xargs)
             
@@ -348,7 +348,7 @@ parse_c_cpp_file() {
         fi
         
         # Typedef detection
-        if [[ $line =~ ^[[:space:]]*typedef[[:space:]]+([^;]+); ]] && [ -z "$current_class" ]; then
+        if [[ "$line" =~ ^[[:space:]]*typedef[[:space:]]+([^;]+); ]] && [ -z "$current_class" ]; then
             local typedef_content="${BASH_REMATCH[1]}"
             # Extract type name (last word)
             local type_name=$(echo "$typedef_content" | awk '{print $NF}')
@@ -369,8 +369,8 @@ parse_c_cpp_file() {
         fi
         
         # Reset current_comment if we hit a significant non-comment line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]] && 
-           [[ $line =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_multiline_comment" = false ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]] && 
+           [[ "$line" =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_multiline_comment" = false ]; then
             current_comment=""
         fi
         

@@ -139,7 +139,7 @@ parse_js_file() {
         fi
         
         # Method detection (ES6 class methods)
-        if [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\)[[:space:]]*\{ ]] && [[ -n "$current_class" ]]; then
+        if [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\([^)]*\)[[:space:]]*\{ ]] && [[ -n "$current_class" ]]; then
             local method_name="${BASH_REMATCH[1]}"
             local params="${BASH_REMATCH[2]}"
             
