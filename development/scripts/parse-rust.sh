@@ -74,42 +74,42 @@ parse_rs_file() {
     
     while IFS= read -r line; do
         # Handle doc comments
-        if [[ $line =~ ^[[:space:]]*/// ]]; then
+        if [[ "$line" =~ ^[[:space:]]*/// ]]; then
             in_doc_comment=true
-            local clean_line=$(echo "$line" | sed 's/^[[:space:]]*\/\/\/[[:space:]]*//')
+            local clean_line=$(echo ""$line"" | sed 's/^[[:space:]]*\/\/\/[[:space:]]*//')
             current_doc+="$clean_line "
             continue
-        elif [[ $line =~ ^[[:space:]]*//! ]]; then
+        elif [[ "$line" =~ ^[[:space:]]*//! ]]; then
             in_doc_comment=true
-            local clean_line=$(echo "$line" | sed 's/^[[:space:]]*\/\/\![[:space:]]*//')
+            local clean_line=$(echo ""$line"" | sed 's/^[[:space:]]*\/\/\![[:space:]]*//')
             current_doc+="$clean_line "
             continue
-        elif [[ $line =~ ^[[:space:]]*/\*\! ]] || [[ $line =~ ^[[:space:]]*/\*\* ]]; then
+        elif [[ "$line" =~ ^[[:space:]]*/\*\! ]] || [[ "$line" =~ ^[[:space:]]*/\*\* ]]; then
             in_doc_comment=true
             current_doc=""
             continue
         fi
         
         if [ "$in_doc_comment" = true ]; then
-            if [[ $line =~ \*/ ]]; then
+            if [[ "$line" =~ \*/ ]]; then
                 in_doc_comment=false
             else
-                local clean_line=$(echo "$line" | sed 's/^[[:space:]]*\*[[:space:]]*//')
+                local clean_line=$(echo ""$line"" | sed 's/^[[:space:]]*\*[[:space:]]*//')
                 current_doc+="$clean_line "
             fi
             continue
         fi
         
         # Reset doc if we hit a non-comment line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]]; then
             if [ -n "$current_doc" ]; then
                 current_doc=$(echo "$current_doc" | xargs)
             fi
         fi
         
         # Struct detection
-        if [[ $line =~ ^[[:space:]]*pub[[:space:]]+struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*pub[[:space:]]+struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*struct[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local struct_name="${BASH_REMATCH[1]}"
             current_struct="$struct_name"
             struct_methods=()
@@ -124,8 +124,8 @@ parse_rs_file() {
         fi
         
         # Enum detection
-        if [[ $line =~ ^[[:space:]]*pub[[:space:]]+enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*pub[[:space:]]+enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*enum[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local enum_name="${BASH_REMATCH[1]}"
             output+="## Enum: \`$enum_name\`\n\n"
             
@@ -138,8 +138,8 @@ parse_rs_file() {
         fi
         
         # Trait detection
-        if [[ $line =~ ^[[:space:]]*pub[[:space:]]+trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*pub[[:space:]]+trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local trait_name="${BASH_REMATCH[1]}"
             output+="## Trait: \`$trait_name\`\n\n"
             
@@ -152,7 +152,7 @@ parse_rs_file() {
         fi
         
         # Impl block detection
-        if [[ $line =~ ^[[:space:]]*impl[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*impl[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             current_impl="${BASH_REMATCH[1]}"
             if [ -n "$current_doc" ]; then
                 output+="#### Implementation Notes:\n> $current_doc\n\n"
@@ -161,19 +161,19 @@ parse_rs_file() {
         fi
         
         # Function detection (methods and free functions)
-        if [[ $line =~ ^[[:space:]]*pub[[:space:]]+fn[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*fn[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*pub[[:space:]]+fn[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*fn[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local func_name="${BASH_REMATCH[1]}"
             
             # Skip private functions for user help
-            if [ "$help_type" = "user" ] && [[ ! $line =~ pub[[:space:]]+fn ]]; then
+            if [ "$help_type" = "user" ] && [[ ! "$line" =~ pub[[:space:]]+fn ]]; then
                 current_doc=""
                 continue
             fi
             
             # Check if it's a method (has self parameter)
             local is_method=false
-            if [[ $line =~ fn[[:space:]]+$func_name[[:space:]]*\((&?self) ]]; then
+            if [[ "$line" =~ fn[[:space:]]+$func_name[[:space:]]*\((&?self) ]]; then
                 is_method=true
                 if [ -n "$current_impl" ] && [ "$current_impl" != "$current_struct" ]; then
                     struct_methods+=("$func_name")
@@ -187,7 +187,7 @@ parse_rs_file() {
             fi
             
             # Extract function signature
-            if [[ $line =~ fn[[:space:]]+$func_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ fn[[:space:]]+$func_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 if [ "$is_method" = true ]; then
                     output+="#### Signature:\n\`\`\`rust\nfn $func_name($params)\n\`\`\`\n\n"
@@ -219,7 +219,7 @@ parse_rs_file() {
             fi
             
             # Extract return type if present
-            if [[ $line =~ -\>[[:space:]]*([^{]+) ]]; then
+            if [[ "$line" =~ -\>[[:space:]]*([^{]+) ]]; then
                 local return_type="${BASH_REMATCH[1]}"
                 output+="#### Returns:\n\`$return_type\`\n\n"
             fi
@@ -249,8 +249,8 @@ parse_rs_file() {
         fi
         
         # Reset current_doc if we're not in a comment and hit a significant line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]] && 
-           [[ $line =~ [a-zA-Z] ]] && [ -n "$current_doc" ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]] && 
+           [[ "$line" =~ [a-zA-Z] ]] && [ -n "$current_doc" ]; then
             current_doc=""
         fi
         

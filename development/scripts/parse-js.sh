@@ -75,7 +75,7 @@ parse_js_file() {
     
     while IFS= read -r line; do
         # Function detection
-        if [[ $line =~ function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local func_name="${BASH_REMATCH[1]}"
             
             # Skip private functions for user help
@@ -86,7 +86,7 @@ parse_js_file() {
             output+="## Function: \`$func_name\`\n\n"
             
             # Extract function signature
-            if [[ $line =~ function[[:space:]]+$func_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ function[[:space:]]+$func_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 output+="#### Signature:\n\`\`\`javascript\nfunction $func_name($params)\n\`\`\`\n\n"
                 
@@ -123,7 +123,7 @@ parse_js_file() {
         fi
         
         # Class detection (ES6)
-        if [[ $line =~ ^class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local class_name="${BASH_REMATCH[1]}"
             current_class="$class_name"
             class_methods=()
@@ -139,7 +139,7 @@ parse_js_file() {
         fi
         
         # Method detection (ES6 class methods)
-        if [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\([^)]*\)[[:space:]]*\{ ]] && [[ -n "$current_class" ]]; then
+        if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\([^)]*\)[[:space:]]*\{ ]] && [[ -n "$current_class" ]]; then
             local method_name="${BASH_REMATCH[1]}"
             local params="${BASH_REMATCH[2]}"
             
@@ -186,7 +186,7 @@ parse_js_file() {
         fi
         
         # Arrow function detection
-        if [[ $line =~ ^[[:space:]]*(const|let|var)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*=[[:space:]]*\((.*)\)[[:space:]]*=> ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(const|let|var)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*=[[:space:]]*\((.*)\)[[:space:]]*=> ]]; then
             local func_name="${BASH_REMATCH[2]}"
             local params="${BASH_REMATCH[3]}"
             

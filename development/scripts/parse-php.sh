@@ -45,7 +45,7 @@ parse_php_file() {
     
     while IFS= read -r line; do
         # Handle docblock comments
-        if [[ $line =~ ^[[:space:]]*/\*\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*/\*\* ]]; then
             in_doc_comment=true
             current_doc=""
             doc_params=()
@@ -54,13 +54,13 @@ parse_php_file() {
         fi
         
         if [ "$in_doc_comment" = true ]; then
-            if [[ $line =~ \*/ ]]; then
+            if [[ "$line" =~ \*/ ]]; then
                 in_doc_comment=false
                 continue
             fi
             
             # Extract @param tags
-            if [[ $line =~ @param[[:space:]]+([^[:space:]]+)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*(.*) ]]; then
+            if [[ "$line" =~ @param[[:space:]]+([^[:space:]]+)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*(.*) ]]; then
                 local p_type="${BASH_REMATCH[1]}"
                 local p_name="${BASH_REMATCH[2]}"
                 local p_desc="${BASH_REMATCH[3]}"
@@ -68,7 +68,7 @@ parse_php_file() {
             fi
             
             # Extract @return tag
-            if [[ $line =~ @return[[:space:]]+([^[:space:]]+)[[:space:]]*(.*) ]]; then
+            if [[ "$line" =~ @return[[:space:]]+([^[:space:]]+)[[:space:]]*(.*) ]]; then
                 doc_returns="${BASH_REMATCH[1]}"
                 if [ -n "${BASH_REMATCH[2]}" ]; then
                     doc_returns+=" - ${BASH_REMATCH[2]}"
@@ -76,7 +76,7 @@ parse_php_file() {
             fi
             
             # Extract description (not tags)
-            if [[ ! $line =~ @ ]] && [[ $line =~ \*[[:space:]]*(.+) ]]; then
+            if [[ ! "$line" =~ @ ]] && [[ "$line" =~ \*[[:space:]]*(.+) ]]; then
                 current_doc+="${BASH_REMATCH[1]} "
             fi
             
@@ -84,7 +84,7 @@ parse_php_file() {
         fi
         
         # Class detection
-        if [[ $line =~ ^[[:space:]]*(abstract[[:space:]]+)?class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(abstract[[:space:]]+)?class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local class_name="${BASH_REMATCH[2]}"
             current_class="$class_name"
             current_interface=""
@@ -92,7 +92,7 @@ parse_php_file() {
             class_methods=()
             output+="## Class: \`$class_name\`\n\n"
             
-            if [[ $line =~ abstract ]]; then
+            if [[ "$line" =~ abstract ]]; then
                 output+="**Abstract class**\n\n"
             fi
             
@@ -105,7 +105,7 @@ parse_php_file() {
         fi
         
         # Interface detection
-        if [[ $line =~ ^[[:space:]]*interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local interface_name="${BASH_REMATCH[1]}"
             current_interface="$interface_name"
             current_class=""
@@ -121,7 +121,7 @@ parse_php_file() {
         fi
         
         # Trait detection
-        if [[ $line =~ ^[[:space:]]*trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*trait[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local trait_name="${BASH_REMATCH[1]}"
             current_trait="$trait_name"
             current_class=""
@@ -137,12 +137,12 @@ parse_php_file() {
         fi
         
         # Function/Method detection
-        if [[ $line =~ ^[[:space:]]*(public|protected|private|static|abstract|final)[[:space:]]*]*function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(public|protected|private|static|abstract|final)[[:space:]]*]*function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*function[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local modifiers=""
             local method_name=""
             
-            if [[ $line =~ (public|protected|private|static|abstract|final) ]]; then
+            if [[ "$line" =~ (public|protected|private|static|abstract|final) ]]; then
                 modifiers="${BASH_REMATCH[1]}"
                 method_name="${BASH_REMATCH[2]}"
             else
@@ -166,7 +166,7 @@ parse_php_file() {
             fi
             
             # Extract method signature
-            if [[ $line =~ function[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ function[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 local signature=""
                 
@@ -258,7 +258,7 @@ parse_php_file() {
         fi
         
         # Property detection (class variables)
-        if [[ $line =~ ^[[:space:]]*(public|protected|private|static|var)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && [ -n "$current_class" ]; then
+        if [[ "$line" =~ ^[[:space:]]*(public|protected|private|static|var)[[:space:]]+(\$[a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && [ -n "$current_class" ]; then
             local modifier="${BASH_REMATCH[1]}"
             local property_name="${BASH_REMATCH[2]}"
             
@@ -290,7 +290,7 @@ parse_php_file() {
         fi
         
         # Constant detection (class constants)
-        if [[ $line =~ ^[[:space:]]*const[[:space:]]+([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && 
+        if [[ "$line" =~ ^[[:space:]]*const[[:space:]]+([A-Z_][A-Z0-9_]*)[[:space:]]*= ]] && 
            [ -n "$current_class" ]; then
             local const_name="${BASH_REMATCH[1]}"
             local const_value=$(echo "$line" | awk -F'=' '{print $2}' | sed 's/;[[:space:]]*$//' | xargs)
@@ -307,7 +307,7 @@ parse_php_file() {
         fi
         
         # Global constant detection
-        if [[ $line =~ ^[[:space:]]*define[[:space:]]*\([[:space:]]*['\"]([A-Z_][A-Z0-9_]*)['\"] ]]; then
+        if [[ "$line" =~ ^[[:space:]]*define[[:space:]]*\([[:space:]]*['\"]([A-Z_][A-Z0-9_]*)['\"] ]]; then
             local const_name="${BASH_REMATCH[1]}"
             output+="## Constant: \`$const_name\`\n\n"
             
@@ -320,8 +320,8 @@ parse_php_file() {
         fi
         
         # Reset current_doc if we hit a significant non-comment line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]] && 
-           [[ $line =~ [a-zA-Z] ]] && [ -n "$current_doc" ] && [ "$in_doc_comment" = false ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]] && 
+           [[ "$line" =~ [a-zA-Z] ]] && [ -n "$current_doc" ] && [ "$in_doc_comment" = false ]; then
             current_doc=""
         fi
         

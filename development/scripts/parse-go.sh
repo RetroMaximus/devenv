@@ -64,30 +64,30 @@ parse_go_file() {
     
     while IFS= read -r line; do
         # Handle block comments
-        if [[ $line =~ ^[[:space:]]*/\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*/\* ]]; then
             in_comment_block=true
             current_comment=""
             continue
         fi
         
         if [ "$in_comment_block" = true ]; then
-            if [[ $line =~ \*/ ]]; then
+            if [[ "$line" =~ \*/ ]]; then
                 in_comment_block=false
             else
                 # Clean comment line
-                local clean_line=$(echo "$line" | sed 's/^[[:space:]]*\*[[:space:]]*//')
+                local clean_line=$(echo ""$line"" | sed 's/^[[:space:]]*\*[[:space:]]*//')
                 current_comment+="$clean_line "
             fi
             continue
         fi
         
         # Function detection
-        if [[ $line =~ ^func[[:space:]]+(\([^)]+\)[[:space:]]+)?([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^func[[:space:]]+(\([^)]+\)[[:space:]]+)?([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local func_name="${BASH_REMATCH[2]}"
             local receiver=""
             
             # Extract receiver if present
-            if [[ $line =~ func[[:space:]]+\(([^)]+)\) ]]; then
+            if [[ "$line" =~ func[[:space:]]+\(([^)]+)\) ]]; then
                 receiver="${BASH_REMATCH[1]}"
             fi
             
@@ -121,7 +121,7 @@ parse_go_file() {
             fi
             
             # Extract function signature
-            if [[ $line =~ func[[:space:]]+.*$func_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ func[[:space:]]+.*$func_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 if [ -n "$receiver" ]; then
                     output+="#### Signature:\n\`\`\`go\nfunc ($receiver) $func_name($params)\n\`\`\`\n\n"
@@ -173,18 +173,18 @@ parse_go_file() {
         fi
         
         # Single line comments
-        if [[ $line =~ ^// ]] && [ -z "$current_comment" ]; then
+        if [[ "$line" =~ ^// ]] && [ -z "$current_comment" ]; then
             current_comment="${line#*//}"
             current_comment=$(echo "$current_comment" | xargs)
         fi
         
         # Reset comment if we hit a non-comment, non-function line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^func ]] && [ -n "$current_comment" ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^func ]] && [ -n "$current_comment" ]; then
             current_comment=""
         fi
         
         # Struct/type detection
-        if [[ $line =~ ^type[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]+struct ]]; then
+        if [[ "$line" =~ ^type[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]+struct ]]; then
             local struct_name="${BASH_REMATCH[1]}"
             current_struct="$struct_name"
             struct_methods=()

@@ -138,7 +138,7 @@ parse_c_cpp_file() {
             current_struct=""
             current_union=""
             
-            if [[ $line =~ enum[[:space:]]+class ]]; then
+            if [[ "$line" =~ enum[[:space:]]+class ]]; then
                 output+="## Enum Class: \`$enum_name\`\n\n"
             else
                 output+="## Enum: \`$enum_name\`\n\n"
@@ -154,7 +154,7 @@ parse_c_cpp_file() {
         
         # Function detection
         if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]:*]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\)[[:space:]]*[^{;]*$ ]] && 
-           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
+           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]]; then
             local return_type=$(echo "${BASH_REMATCH[1]}" | xargs)
             local func_name="${BASH_REMATCH[2]}"
             local params="${BASH_REMATCH[3]}"
@@ -265,7 +265,7 @@ parse_c_cpp_file() {
         
         # Variable declaration (members and globals)
         if [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_<>[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
-           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]]; then
+           [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]]; then
             local var_type=$(echo "${BASH_REMATCH[1]}" | xargs)
             local var_name="${BASH_REMATCH[2]}"
             
@@ -287,7 +287,7 @@ parse_c_cpp_file() {
             output+="**Type**: \`$var_type\`\n\n"
             
             # Extract value if available
-            if [[ $line =~ =[[:space:]]*([^;]+) ]]; then
+            if [[ "$line" =~ =[[:space:]]*([^;]+) ]]; then
                 local var_value="${BASH_REMATCH[1]}"
                 output+="**Value**: \`$var_value\`\n\n"
             fi

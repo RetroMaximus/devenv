@@ -49,22 +49,22 @@ parse_ruby_file() {
         fi
         
         if [ "$in_comment_block" = true ]; then
-            if [[ $line =~ ^=end ]]; then
+            if [[ "$line" =~ ^=end ]]; then
                 in_comment_block=false
             else
-                current_comment+="$line\n"
+                current_comment+=""$line"\n"
             fi
             continue
         fi
         
         # Single line comments
-        if [[ $line =~ ^[[:space:]]*# ]] && [ -z "$current_comment" ]; then
+        if [[ "$line" =~ ^[[:space:]]*# ]] && [ -z "$current_comment" ]; then
             current_comment="${line#*#}"
             current_comment=$(echo "$current_comment" | xargs)
         fi
         
         # Class detection
-        if [[ $line =~ ^[[:space:]]*class[[:space:]]+([A-Z][a-zA-Z0-9_:]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*class[[:space:]]+([A-Z][a-zA-Z0-9_:]*) ]]; then
             local class_name="${BASH_REMATCH[1]}"
             current_class="$class_name"
             current_module=""
@@ -80,7 +80,7 @@ parse_ruby_file() {
         fi
         
         # Module detection
-        if [[ $line =~ ^[[:space:]]*module[[:space:]]+([A-Z][a-zA-Z0-9_:]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*module[[:space:]]+([A-Z][a-zA-Z0-9_:]*) ]]; then
             local module_name="${BASH_REMATCH[1]}"
             current_module="$module_name"
             current_class=""
@@ -95,7 +95,7 @@ parse_ruby_file() {
         fi
         
         # Method detection (instance methods)
-        if [[ $line =~ ^[[:space:]]*def[[:space:]]+([a-z_][a-zA-Z0-9_?!]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*def[[:space:]]+([a-z_][a-zA-Z0-9_?!]*) ]]; then
             local method_name="${BASH_REMATCH[1]}"
             
             # Skip private methods for user help (Ruby convention: _prefix)
@@ -112,7 +112,7 @@ parse_ruby_file() {
             fi
             
             # Extract method signature
-            if [[ $line =~ def[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ def[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 output+="#### Signature:\n\`\`\`ruby\ndef $method_name($params)\n\`\`\`\n\n"
                 
@@ -184,7 +184,7 @@ parse_ruby_file() {
         fi
         
         # Class method detection (self.method)
-        if [[ $line =~ ^[[:space:]]*def[[:space:]]+self\.([a-z_][a-zA-Z0-9_?!]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*def[[:space:]]+self\.([a-z_][a-zA-Z0-9_?!]*) ]]; then
             local method_name="${BASH_REMATCH[1]}"
             
             # Skip private methods for user help
@@ -201,7 +201,7 @@ parse_ruby_file() {
             fi
             
             # Extract method signature
-            if [[ $line =~ def[[:space:]]+self\.$method_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ def[[:space:]]+self\.$method_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 output+="#### Signature:\n\`\`\`ruby\ndef self.$method_name($params)\n\`\`\`\n\n"
                 
@@ -257,7 +257,7 @@ parse_ruby_file() {
         fi
         
         # Attribute accessors
-        if [[ $line =~ ^[[:space:]]*(attr_reader|attr_writer|attr_accessor)[[:space:]]+([a-z_][a-zA-Z0-9_?!]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(attr_reader|attr_writer|attr_accessor)[[:space:]]+([a-z_][a-zA-Z0-9_?!]*) ]]; then
             local attr_type="${BASH_REMATCH[1]}"
             local attr_name="${BASH_REMATCH[2]}"
             
@@ -278,7 +278,7 @@ parse_ruby_file() {
         fi
         
         # Constant detection
-        if [[ $line =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]]; then
+        if [[ "$line" =~ ^[[:space:]]*([A-Z_][A-Z0-9_]*)[[:space:]]*= ]]; then
             local const_name=$(echo "$line" | awk -F'=' '{print $1}' | xargs)
             local const_value=$(echo "$line" | awk -F'=' '{print $2}' | xargs)
             
@@ -299,8 +299,8 @@ parse_ruby_file() {
         fi
         
         # Reset current_comment if we hit a significant non-comment line
-        if [[ ! $line =~ ^[[:space:]]*# ]] && [[ ! $line =~ ^=begin ]] && [[ ! $line =~ ^=end ]] &&
-           [[ $line =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_comment_block" = false ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*# ]] && [[ ! "$line" =~ ^=begin ]] && [[ ! "$line" =~ ^=end ]] &&
+           [[ "$line" =~ [a-zA-Z] ]] && [ -n "$current_comment" ] && [ "$in_comment_block" = false ]; then
             current_comment=""
         fi
         

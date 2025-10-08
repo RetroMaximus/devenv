@@ -94,7 +94,7 @@ parse_java_file() {
     
     while IFS= read -r line; do
         # Handle Javadoc comments
-        if [[ $line =~ ^[[:space:]]*/\*\* ]]; then
+        if [[ "$line" =~ ^[[:space:]]*/\*\* ]]; then
             in_javadoc=true
             current_javadoc=""
             javadoc_params=()
@@ -103,25 +103,25 @@ parse_java_file() {
         fi
         
         if [ "$in_javadoc" = true ]; then
-            if [[ $line =~ \*/ ]]; then
+            if [[ "$line" =~ \*/ ]]; then
                 in_javadoc=false
                 continue
             fi
             
             # Extract @param tags
-            if [[ $line =~ @param[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]+(.+) ]]; then
+            if [[ "$line" =~ @param[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]+(.+) ]]; then
                 local p_name="${BASH_REMATCH[1]}"
                 local p_desc="${BASH_REMATCH[2]}"
                 javadoc_params+=("$p_name: $p_desc")
             fi
             
             # Extract @return tag
-            if [[ $line =~ @return[[:space:]]+(.+) ]]; then
+            if [[ "$line" =~ @return[[:space:]]+(.+) ]]; then
                 javadoc_returns="${BASH_REMATCH[1]}"
             fi
             
             # Extract regular description (not tags)
-            if [[ ! $line =~ @ ]] && [[ $line =~ \*[[:space:]]*(.+) ]]; then
+            if [[ ! "$line" =~ @ ]] && [[ "$line" =~ \*[[:space:]]*(.+) ]]; then
                 current_javadoc+="${BASH_REMATCH[1]} "
             fi
             
@@ -129,8 +129,8 @@ parse_java_file() {
         fi
         
         # Class detection
-        if [[ $line =~ ^[[:space:]]*public[[:space:]]+class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*public[[:space:]]+class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local class_name="${BASH_REMATCH[1]}"
             current_class="$class_name"
             current_interface=""
@@ -146,8 +146,8 @@ parse_java_file() {
         fi
         
         # Interface detection
-        if [[ $line =~ ^[[:space:]]*public[[:space:]]+interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
-           [[ $line =~ ^[[:space:]]*interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*public[[:space:]]+interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]] || 
+           [[ "$line" =~ ^[[:space:]]*interface[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local interface_name="${BASH_REMATCH[1]}"
             current_interface="$interface_name"
             current_class=""
@@ -163,13 +163,13 @@ parse_java_file() {
         fi
         
         # Method detection
-        if [[ $line =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]] || [[ $line =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]] || [[ "$line" =~ ^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(([^)]*)\) ]]; then
             local modifier=""
             local return_type=""
             local method_name=""
             local params=""
             
-            if [[ $line =~ (public|protected|private) ]]; then
+            if [[ "$line" =~ (public|protected|private) ]]; then
                 modifier="${BASH_REMATCH[1]}"
                 return_type="${BASH_REMATCH[2]}"
                 method_name="${BASH_REMATCH[3]}"
@@ -208,7 +208,7 @@ parse_java_file() {
             if [ -n "$modifier" ]; then
                 full_signature+="$modifier "
             fi
-            if [[ $return_type != "void" ]] && [[ ! $line =~ constructor ]]; then
+            if [[ $return_type != "void" ]] && [[ ! "$line" =~ constructor ]]; then
                 full_signature+="$return_type "
             fi
             full_signature+="$method_name($params)"
@@ -244,7 +244,7 @@ parse_java_file() {
             fi
             
             # Add return type info
-            if [[ $return_type != "void" ]] && [[ ! $line =~ constructor ]]; then
+            if [[ $return_type != "void" ]] && [[ ! "$line" =~ constructor ]]; then
                 output+="#### Returns:\n\`$return_type\`"
                 if [ -n "$javadoc_returns" ]; then
                     output+=" - $javadoc_returns"
@@ -283,7 +283,7 @@ parse_java_file() {
         fi
         
         # Field detection (class variables)
-        if [[ $line =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
+        if [[ "$line" =~ ^[[:space:]]*(public|protected|private)[[:space:]]+([^[:space:]]+)[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*[=;] ]] && 
            [ -n "$current_class" ]; then
             local modifier="${BASH_REMATCH[1]}"
             local field_type="${BASH_REMATCH[2]}"
@@ -307,8 +307,8 @@ parse_java_file() {
         fi
         
         # Reset current_javadoc if we're not in a comment and hit a significant line
-        if [[ ! $line =~ ^[[:space:]]*// ]] && [[ ! $line =~ ^[[:space:]]*/\* ]] && 
-           [[ $line =~ [a-zA-Z] ]] && [ -n "$current_javadoc" ] && [ "$in_javadoc" = false ]; then
+        if [[ ! "$line" =~ ^[[:space:]]*// ]] && [[ ! "$line" =~ ^[[:space:]]*/\* ]] && 
+           [[ "$line" =~ [a-zA-Z] ]] && [ -n "$current_javadoc" ] && [ "$in_javadoc" = false ]; then
             current_javadoc=""
         fi
         

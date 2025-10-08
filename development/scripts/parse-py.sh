@@ -34,7 +34,7 @@ extract_docstring() {
     
     # Read next lines to find docstring
     while IFS= read -r line; do
-        if [[ $line =~ ^[[:space:]]*\"\"\" ]]; then
+        if [[ "$line" =~ ^[[:space:]]*\"\"\" ]]; then
             if [ "$in_docstring" = true ]; then
                 break
             else
@@ -68,7 +68,7 @@ parse_python_file() {
     
     while IFS= read -r line; do
         # Class detection
-        if [[ $line =~ ^class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^class[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local class_name="${BASH_REMATCH[1]}"
             current_class="$class_name"
             class_methods=()
@@ -84,7 +84,7 @@ parse_python_file() {
         fi
         
         # Method detection
-        if [[ $line =~ ^[[:space:]]*def[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
+        if [[ "$line" =~ ^[[:space:]]*def[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*) ]]; then
             local method_name="${BASH_REMATCH[1]}"
             
             # Skip private methods for user help
@@ -97,7 +97,7 @@ parse_python_file() {
             output+="### Method: \`$method_name\`\n\n"
             
             # Extract method signature
-            if [[ $line =~ def[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
+            if [[ "$line" =~ def[[:space:]]+$method_name[[:space:]]*\((.*)\) ]]; then
                 local params="${BASH_REMATCH[1]}"
                 output+="#### Signature:\n\`\`\`python\ndef $method_name($params)\n\`\`\`\n\n"
                 
