@@ -7,6 +7,19 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Get correct user home directory
+if [ -n "$SUDO_USER" ]; then
+    USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+else
+    USER_HOME=$HOME
+fi
+
+# Configuration
+CONFIG_FILE="$USER_HOME/.dev-env-config"
+source "$CONFIG_FILE"
+
+# Help generator configuration
+HELP_CONFIG_FILE="$USER_HOME/.help-gen-config"
 
 # Helper function to extract Rust doc comments
 extract_rustdoc() {

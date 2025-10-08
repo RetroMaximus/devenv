@@ -29,7 +29,7 @@ load_sync_tools() {
 # Load or create configuration
 load_config() {
     if [ -f ~/.dev-env-config ]; then
-        source ~/.dev-env-config
+        source "${CONFIG_FILE}"
         # Set default values if any variables are empty
         DEV_DIR="${DEV_DIR:-$USER_HOME/devenv/development}"
         EDITOR="${EDITOR:-neovim}"
@@ -60,7 +60,7 @@ save_config() {
     local temp_file=$(mktemp)
     
     # Read current config and update values
-    if [ -f ~/.dev-env-config ]; then
+    if [ -f "${CONFIG_FILE}" ]; then
         while IFS= read -r line; do
             case $line in
                 DEV_DIR=*)
@@ -91,7 +91,7 @@ save_config() {
                     echo "$line" >> "$temp_file"
                     ;;
             esac
-        done < ~/.dev-env-config
+        done < "${CONFIG_FILE}"
     else
         # Create new config with all values
         echo "DEV_DIR=\"$DEV_DIR\"" >> "$temp_file"
@@ -105,7 +105,7 @@ save_config() {
     fi
     
     # Replace the original config file
-    mv "$temp_file" ~/.dev-env-config
+    sudo mv "$temp_file" "${CONFIG_FILE}"
     echo -e "${GREEN}Configuration saved!${NC}"
 }
 
@@ -172,12 +172,12 @@ change_dev_dir() {
 # Edit configuration manually
 edit_config() {
     case $EDITOR in
-        "neovim") nvim ~/.dev-env-config ;;
-        "emacs") emacs ~/.dev-env-config ;;
-        "nano") nano ~/.dev-env-config ;;
+        "neovim") nvim "${CONFIG_FILE}" ;;
+        "emacs") emacs "${CONFIG_FILE}" ;;
+        "nano") nano "${CONFIG_FILE}" ;;
     esac
     # Reload config after editing
-    source ~/.dev-env-config
+    source "${CONFIG_FILE}"
 }
 
 # Add archive configuration menu option
@@ -259,14 +259,14 @@ show_sync_menu() {
 sync_project_menu() {
     list_projects
     read -p "Enter project name to sync: " project_name
-    source ~/development/scripts/sync-tools.sh
+    source "${DEV_DIR}/scripts/sync-tools.sh"
     sync_project "$project_name"
 }
 
 setup_hook_menu() {
     list_projects
     read -p "Enter project name for auto-sync hook: " project_name
-    source ~/development/scripts/sync-tools.sh
+    source "${DEV_DIR}/scripts/sync-tools.sh"
     setup_git_archiving "$project_name"
 }
 
@@ -274,20 +274,20 @@ schedule_backup_menu() {
     list_projects
     read -p "Enter project name to schedule: " project_name
     read -p "Enter schedule (daily/weekly/hourly or cron): " schedule
-    source ~/development/scripts/sync-tools.sh
+    source "${DEV_DIR}/scripts/sync-tools.sh"
     setup_backup_schedule "$project_name" "$schedule"
 }
 
 show_sync_status() {
-    source ~/development/scripts/sync-tools.sh
+    source "${DEV_DIR}/scripts/sync-tools.sh"
     list_sync_status
 }
 
 # List projects for selection
 list_projects() {
     echo -e "${YELLOW}Available projects:${NC}"
-    if [ -d "$DEV_DIR/projects/active" ]; then
-        ls "$DEV_DIR/projects/active"
+    if [ -d "$USER_HOME/projects/active" ]; then
+        ls "$USER_HOME/projects/active"
     else
         echo -e "${RED}No projects found!${NC}"
         return 1
@@ -316,7 +316,7 @@ show_menu() {
             3) change_dev_dir ;;
             4) configure_archive ;;
             5) show_sync_menu ;;
-            6) source ~/development/scripts/help-gen.sh && configure_help_gen ;;
+            6) source "${DEV_DIR}/scripts/help-gen.sh" && configure_help_gen ;;
             7) edit_config ;;
             8) echo -e "${GREEN}Returning to main menu...${NC}"; break ;;
             *) echo -e "${RED}Invalid option!${NC}" ;;

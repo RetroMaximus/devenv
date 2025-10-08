@@ -15,11 +15,11 @@ else
 fi
 
 # Configuration
-CONFIG_FILE="$USER_HOME/.dev_env_config"
+CONFIG_FILE="$USER_HOME/.dev-env-config"
 source "$CONFIG_FILE"
 
 # Help generator configuration
-HELP_CONFIG_FILE="$USER_HOME/.help_gen_config"
+HELP_CONFIG_FILE="$USER_HOME/.help-gen-config"
 
 
 # Helper function to extract docstrings
