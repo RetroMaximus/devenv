@@ -60,6 +60,7 @@ add_alias_if_not_exists "batch-import" "~/devenv/development/scripts/batch-impor
 add_alias_if_not_exists "config-dev" "~/devenv/development/scripts/config-manager.sh" "Configure environment settings"
 add_alias_if_not_exists "lang-setup" "~/devenv/development/scripts/language-manager.sh" "Install and manage programming languages"
 add_alias_if_not_exists "set-streamer-mask" "~/devenv/development/scripts/assign-streamer-mask.sh" "Set the streamer mode mask. This can be anything you wish."
+add_alias_if_not_exists "set-ip-mask" "~/devenv/development/scripts/assign-ip-mask.sh" "Set the streamer IP mask. This can be anything you wish."
 add_alias_if_not_exists "set-streamer-mode" "~/devenv/development/scripts/assign-streamer-mode.sh" "Set to True/true or False/false. Note assing a mask first."
 add_alias_if_not_exists "show-streamer-status" "~/devenv/development/scripts/show-streamer-mode-status.sh" "Show Streamer mode and mask settings."
 
